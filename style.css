@@ -35,6 +35,12 @@ html, body {
   height: 100vh;
 }
 
+#chatControls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 5px;
+}
+
 #chat {
   flex: 1;
   overflow-y: auto;
@@ -117,6 +123,7 @@ button {
   background: #128c7e;
   color: white;
 }
+
 
 
 
