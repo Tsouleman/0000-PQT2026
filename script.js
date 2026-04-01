@@ -78,16 +78,22 @@ db.ref("messages").on("value", snapshot => {
     div.className = "message " + (msg.sender === user ? "mine" : "other");
 
     // statut
-    let status = "✓";
-    let readTime = "";
-    if (msg.seenBy && msg.seenBy.length > 0) {
-      status = "✓✓";
-      // heure de lecture si l'utilisateur l'a vu
-      if (msg.sender === user) {
-        const lastSeen = msg.seenBy[msg.seenBy.length - 1].time;
-        if (lastSeen) readTime = ` (vu ${formatTime(lastSeen)})`;
-      }
+let status = "✓";
+let readTime = "";
+
+// Vérifier si d'autres utilisateurs ont lu le message
+if (msg.seenBy && msg.seenBy.length > 0) {
+  status = "✓✓";
+  if (msg.sender === user) {
+    // Trouver le dernier temps de lecture de quelqu'un d'autre
+    const others = msg.seenBy.filter(e => e.user !== user && e.time);
+    if (others.length > 0) {
+      const lastReadTime = Math.max(...others.map(e => e.time));
+      readTime = ` (vu ${formatTime(lastReadTime)})`;
     }
+  }
+}
+
 
     // actions seulement pour l'auteur
     let actions = "";
