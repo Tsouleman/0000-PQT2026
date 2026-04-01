@@ -1,3 +1,6 @@
+// -------------------------
+// INITIALISATION FIREBASE
+// -------------------------
 const firebaseConfig = {
 apiKey:"AIzaSyCmw1nlfvNhzrH4_0f72lMQthgiToCLBzI",
 authDomain:"pqt2026.firebaseapp.com",
@@ -7,30 +10,32 @@ storageBucket:"pqt2026.firebasestorage.app"
 };
 
 firebase.initializeApp(firebaseConfig);
-
 const db = firebase.database();
 const storage = firebase.storage();
 
+// Utilisateur unique pour session
 const user = localStorage.getItem("chatUser") || "user" + Math.floor(Math.random() * 1000);
 localStorage.setItem("chatUser", user);
 
+// -------------------------
 // LOGIN
+// -------------------------
 function login() {
   const pass = document.getElementById("password").value;
   if (pass === "1234") {
     document.getElementById("login").style.display = "none";
-    
+    document.getElementById("chatApp").style.display = "flex"; // Affiche chat uniquement ici
   } else {
     alert("Mot de passe incorrect");
   }
 }
 
-
+// -------------------------
 // ENVOI MESSAGE
+// -------------------------
 function sendMessage() {
   const text = document.getElementById("messageInput").value;
   const file = document.getElementById("imageInput").files[0];
-
   if (!text && !file) return;
 
   if (file) {
@@ -59,7 +64,9 @@ function sendMessage() {
   document.getElementById("imageInput").value = "";
 }
 
-// FORMATER HEURE
+// -------------------------
+// FORMAT HEURE
+// -------------------------
 function formatTime(ts) {
   const d = new Date(ts);
   let h = d.getHours();
@@ -69,7 +76,9 @@ function formatTime(ts) {
   return h + ":" + m;
 }
 
+// -------------------------
 // AFFICHAGE CHAT
+// -------------------------
 const chat = document.getElementById("chat");
 
 db.ref("messages").on("value", snapshot => {
@@ -80,25 +89,23 @@ db.ref("messages").on("value", snapshot => {
     const div = document.createElement("div");
     div.className = "message " + (msg.sender === user ? "mine" : "other");
 
-    // statut
-let status = "✓";
-let readTime = "";
+    // Statut lu
+    let status = "✓";
+    let readTime = "";
 
-// Vérifier si d'autres utilisateurs ont lu le message
-if (msg.seenBy && msg.seenBy.length > 0) {
-  status = "✓✓";
-  if (msg.sender === user) {
-    // Trouver le dernier temps de lecture de quelqu'un d'autre
-    const others = msg.seenBy.filter(e => e.user !== user && e.time);
-    if (others.length > 0) {
-      const lastReadTime = Math.max(...others.map(e => e.time));
-      readTime = ` (vu ${formatTime(lastReadTime)})`;
+    if (msg.seenBy && msg.seenBy.length > 0) {
+      status = "✓✓";
+      if (msg.sender === user) {
+        // Dernier temps de lecture des autres utilisateurs
+        const others = msg.seenBy.filter(e => e.user !== user && e.time);
+        if (others.length > 0) {
+          const lastReadTime = Math.max(...others.map(e => e.time));
+          readTime = ` (vu ${formatTime(lastReadTime)})`;
+        }
+      }
     }
-  }
-}
 
-
-    // actions seulement pour l'auteur
+    // Actions seulement pour l'auteur
     let actions = "";
     if (msg.sender === user) {
       actions = `
@@ -130,12 +137,16 @@ if (msg.seenBy && msg.seenBy.length > 0) {
   chat.scrollTop = chat.scrollHeight;
 });
 
+// -------------------------
 // SUPPRIMER
+// -------------------------
 function deleteMessage(id) {
   db.ref("messages/" + id).remove();
 }
 
+// -------------------------
 // MODIFIER
+// -------------------------
 function editMessage(id, text) {
   const newText = prompt("Modifier message", text);
   if (newText) {
@@ -143,11 +154,12 @@ function editMessage(id, text) {
   }
 }
 
+// -------------------------
 // ENVOI AVEC ENTER
+// -------------------------
 document.getElementById("messageInput").addEventListener("keydown", function (event) {
   if (event.key === "Enter" && !event.shiftKey) {
     event.preventDefault();
     sendMessage();
   }
 });
-
