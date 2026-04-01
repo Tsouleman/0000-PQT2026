@@ -5,8 +5,6 @@ authDomain:"pqt2026.firebaseapp.com",
 databaseURL:"https://pqt2026-default-rtdb.firebaseio.com",
 projectId:"pqt2026",
 storageBucket:"pqt2026.firebasestorage.app"
-
-
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -15,8 +13,8 @@ const db = firebase.database();
 const storage = firebase.storage();
 
 const user = localStorage.getItem("chatUser") || "user"+Math.floor(Math.random()*1000);
-
 localStorage.setItem("chatUser",user);
+
 
 function login(){
 
@@ -30,6 +28,7 @@ document.getElementById("chatApp").style.display="flex";
 }
 
 }
+
 
 function sendMessage(){
 
@@ -78,6 +77,7 @@ document.getElementById("imageInput").value="";
 
 }
 
+
 const chat = document.getElementById("chat");
 
 db.ref("messages").on("value", snapshot=>{
@@ -92,11 +92,22 @@ const msg = data[id];
 
 const div = document.createElement("div");
 
-div.className="message "+(msg.sender===user?"mine":"other");
+div.className = "message " + (msg.sender === user ? "mine" : "other");
 
 let seen="✓";
 
 if(msg.seenBy && msg.seenBy.length>0) seen="✓✓";
+
+let actions="";
+
+if(msg.sender === user){
+
+actions = `
+<span class="actions" onclick="editMessage('${id}','${msg.text}')">modifier</span>
+<span class="actions" onclick="deleteMessage('${id}')">supprimer</span>
+`;
+
+}
 
 div.innerHTML=`
 
@@ -106,13 +117,12 @@ ${msg.image ? "<img src='"+msg.image+"'>" : ""}
 
 <div class="status">${seen}</div>
 
-<span class="actions" onclick="editMessage('${id}','${msg.text}')">modifier</span>
-
-<span class="actions" onclick="deleteMessage('${id}')">supprimer</span>
+${actions}
 
 `;
 
 chat.appendChild(div);
+
 
 if(msg.sender !== user){
 
@@ -138,11 +148,13 @@ chat.scrollTop = chat.scrollHeight;
 
 });
 
+
 function deleteMessage(id){
 
 db.ref("messages/"+id).remove();
 
 }
+
 
 function editMessage(id,text){
 
@@ -159,6 +171,7 @@ text:newText
 }
 
 }
+
 
 document.getElementById("messageInput").addEventListener("keydown",function(event){
 
