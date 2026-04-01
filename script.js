@@ -22,7 +22,7 @@ localStorage.setItem("chatUser", user);
 // -------------------------
 function login() {
   const pass = document.getElementById("password").value;
-  if (pass === "Crush0000") {
+  if (pass === "1234") {
     document.getElementById("login").style.display = "none";
     document.getElementById("chatApp").style.display = "flex";
     startChatListener();
@@ -36,21 +36,28 @@ function login() {
 // -------------------------
 function sendMessage() {
   const text = document.getElementById("messageInput").value;
-  const file = document.getElementById("imageInput").files[0];
+  const fileInput = document.getElementById("imageInput");
+  const file = fileInput.files[0];
+
   if (!text && !file) return;
 
   if (file) {
-    const ref = storage.ref("images/" + Date.now());
-    ref.put(file).then(snapshot => {
-      snapshot.ref.getDownloadURL().then(url => {
+    const storageRef = storage.ref("images/" + Date.now() + "_" + file.name);
+    storageRef.put(file).then(() => {
+      storageRef.getDownloadURL().then((url) => {
         db.ref("messages").push({
-          text: text,
+          text: text || "",
           image: url,
           sender: user,
           timestamp: Date.now(),
           seenBy: []
         });
+        document.getElementById("messageInput").value = "";
+        fileInput.value = "";
+        autoResizeTextarea();
       });
+    }).catch(err => {
+      alert("Erreur lors de l'envoi de l'image: " + err.message);
     });
   } else {
     db.ref("messages").push({
@@ -59,11 +66,9 @@ function sendMessage() {
       timestamp: Date.now(),
       seenBy: []
     });
+    document.getElementById("messageInput").value = "";
+    autoResizeTextarea();
   }
-
-  document.getElementById("messageInput").value = "";
-  document.getElementById("imageInput").value = "";
-  autoResizeTextarea();
 }
 
 // -------------------------
@@ -158,6 +163,15 @@ function editMessage(id, text) {
 }
 
 // -------------------------
+// VIDER CHAT
+// -------------------------
+function clearChat() {
+  if (confirm("Voulez-vous vraiment supprimer tous les messages ?")) {
+    db.ref("messages").remove();
+  }
+}
+
+// -------------------------
 // ENVOI AVEC ENTER
 // -------------------------
 const messageInput = document.getElementById("messageInput");
@@ -178,4 +192,6 @@ function autoResizeTextarea() {
   messageInput.style.height = 'auto';
   messageInput.style.height = messageInput.scrollHeight + 'px';
 }
+
+
 
