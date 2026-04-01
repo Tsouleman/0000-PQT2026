@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat privé</title>
+<style>
+body{font-family:Arial;margin:0;display:flex;flex-direction:column;height:100vh;background:#e5ddd5 url("https://www.transparenttextures.com/patterns/cubes.png");}
+#login{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;}
+#topBar{padding:5px;background:#ddd;text-align:center;}
+#chat{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;}
+.msg{max-width:75%;padding:8px 12px;border-radius:12px;margin:4px 0;background:white;position:relative;word-wrap:break-word;cursor:grab;}
+.msg.me{align-self:flex-end;background:#dcf8c6;}
+.timestamp{font-size:10px;color:#777;text-align:right;margin-top:2px;}
+.reply{font-size:12px;border-left:3px solid #25D366;padding-left:6px;margin-bottom:4px;background:#f7f7f7;border-radius:4px;cursor:pointer;}
+img{max-width:200px;border-radius:6px;margin-top:5px;cursor:pointer;}
+.actions{font-size:10px;margin-top:4px;}
+.actions span{margin-right:8px;cursor:pointer;color:#007bff;}
+#inputBar{display:flex;padding:6px;background:white;position:sticky;bottom:0;align-items:center;}
+#message{flex:1;padding:8px;border-radius:8px;border:1px solid #ccc;}
+#preview{max-width:120px;display:none;margin:5px;}
+#typing{font-size:12px;color:#555;padding-left:10px;padding-bottom:2px;}
+@media (prefers-color-scheme: dark){
+body{background:#111 url("https://www.transparenttextures.com/patterns/dark-mosaic.png");color:white;}
+.msg{background:#2a2a2a;}
+.msg.me{background:#056162;}
+.actions span{color:#7fcfff;}
+#inputBar{background:#1a1a1a;}
+#message{background:#2a2a2a;color:white;border:none;}
+}
+</style>
+</head>
+
+<body>
+<div id="login">
+<h3>Chat privé</h3>
+<input id="password" placeholder="Mot de passe">
+<button id="enterBtn">Entrer</button>
+</div>
+
+<div id="app" style="display:none;flex-direction:column;height:100vh;">
+<div id="topBar">
+<button id="clearBtn">Vider le chat</button>
+<div id="typing"></div>
+</div>
+
+<div id="chat"></div>
+<img id="preview">
+<div id="inputBar">
+<input id="message" placeholder="Message" oninput="typing(true)">
+<input type="file" id="image">
+<button onclick="send()">➤</button>
+</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
+
+<script>
+const PASSWORD="secret123"
+let replyTo=null
+let userId=localStorage.getItem("chatUser")
+if(!userId){userId="user_"+Math.random().toString(36).substr(2,9);localStorage.setItem("chatUser",userId)}
+let typingTimeout;
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCmw1nlfvNhzrH4_0f72lMQthgiToCLBzI",
+  authDomain: "pqt2026.firebaseapp.com",
+  databaseURL: "https://pqt2026-default-rtdb.firebaseio.com",
+  projectId: "pqt2026",
+  storageBucket: "pqt2026.firebasestorage.app",
+  messagingSenderId: "468627399741",
+  appId: "1:468627399741:web:4a6aba6f804c0292ae7654"
+};
+firebase.initializeApp(firebaseConfig)
+const db=firebase.database()
+const storage=firebase.storage()
+
+function enter(){
+if(document.getElementById("password").value!==PASSWORD){alert("Mot de passe incorrect");return;}
+document.getElementById("login").style.display="none"
+document.getElementById("app").style.display="flex"
+loadMessages()
+}
+document.getElementById("enterBtn").addEventListener("click", enter);
+
+// Indicateur "en train d'écrire..."
+function typing(state){
+db.ref("typing/"+userId).set(state)
+clearTimeout(typingTimeout)
+if(state){
+typingTimeout=setTimeout(()=>{db.ref("typing/"+userId).set(false)},2000)
+}
+}
+db.ref("typing").on("value",snap=>{
+const typingDiv=document.getElementById("typing")
+let users=[]
+snap.forEach(s=>{if(s.val() && s.key!==userId) users.push("Quelqu'un")})
+typingDiv.innerText=users.length>0? users.join(", ")+" écrit…" : ""
+})
+
+// Aperçu image
+document.getElementById("image").onchange=function(){
+const file=this.files[0]
+if(file){
+const reader=new FileReader()
+reader.onload=e=>{
+const p=document.getElementById("preview")
+p.src=e.target.result
+p.style.display="block"
+}
+reader.readAsDataURL(file)
+}
+}
+
+function loadMessages(){
+db.ref("messages").on("child_added",snap=>{
+const m=snap.val()
+const div=document.createElement("div")
+div.className="msg"
+div.id=snap.key
+if(m.user===userId) div.classList.add("me")
+
+let html=""
+if(m.replyText){
+html+=`<div class="reply" onclick="scrollToMessage('${m.replyToId||""}')">↪ ${m.replyText}</div>`
+}
+html+=m.text||""
+if(m.edited) html+=" <i>(modifié)</i>"
+div.innerHTML=html
+
+if(m.image){
+const img=document.createElement("img")
+img.src=m.image
+img.onclick=()=>window.open(m.image)
+div.appendChild(img)
+}
+
+// Actions pour ses messages
+if(m.user===userId){
+const actions=document.createElement("div");
+actions.className="actions";
+const key=snap.key; // clé fixe pour ce message
+
+const edit=document.createElement("span");
+edit.innerText="modifier";
+edit.addEventListener("click", function(){
+    const nouveau=prompt("Modifier le message", m.text);
+    if(nouveau!==null){
+        db.ref("messages/"+key).update({text:nouveau,edited:true});
+    }
+});
+
+const del=document.createElement("span");
+del.innerText="supprimer";
+del.addEventListener("click", function(){
+    if(confirm("Supprimer ce message ?")){
+        db.ref("messages/"+key).remove();
+    }
+});
+
+actions.appendChild(edit);
+actions.appendChild(del);
+div.appendChild(actions);
+}
+
+// Glisser pour répondre
+div.addEventListener('touchstart',function(e){
+let startX=e.touches[0].clientX
+div.addEventListener('touchend',function(ev){
+let endX=ev.changedTouches[0].clientX
+if(endX-startX>50){
+replyTo={text:m.text||"[image]", replyToId:snap.key}
+document.getElementById("message").placeholder="Réponse : "+(m.text||"image")
+}
+},{once:true})
+})
+
+document.getElementById("chat").appendChild(div)
+document.getElementById("chat").scrollTop=999999
+})
+}
+
+// Envoyer message
+function send(){
+const text=document.getElementById("message").value
+const file=document.getElementById("image").files[0]
+if(file){
+const ref=storage.ref("images/"+Date.now())
+ref.put(file).then(()=>{
+ref.getDownloadURL().then(url=>{push(text,url)})})
+}else{
+push(text,null)
+}
+document.getElementById("message").value=""
+document.getElementById("preview").style.display="none"
+replyTo=null
+typing(false)
+}
+
+function push(text,img){
+const data={
+user:userId,
+text:text,
+image:img,
+time:Date.now(),
+read:false
+}
+if(replyTo){
+data.replyText=replyTo.text
+data.replyToId=replyTo.replyToId
+}
+db.ref("messages").push(data)
+}
+
+function scrollToMessage(id){
+if(!id) return
+const el=document.getElementById(id)
+if(el) el.scrollIntoView({behavior:"smooth",block:"center"})
+}
+
+// Vider le chat
+document.getElementById("clearBtn").addEventListener("click", function(){
+if(confirm("Vider toute la conversation ?")){
+db.ref("messages").remove();
+}
+})
+
+// Marquer messages lus
+db.ref("messages").on("child_added",snap=>{
+db.ref("messages/"+snap.key).update({read:true})
+})
+
+// Entrée pour envoyer message sur PC
+document.getElementById("message").addEventListener("keydown", function(e){
+    if(e.key === "Enter" && !e.shiftKey){
+        e.preventDefault();
+        send();
+    }
+});
+</script>
+</body>
+</html>
