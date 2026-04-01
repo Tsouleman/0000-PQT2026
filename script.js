@@ -19,7 +19,7 @@ function login() {
   const pass = document.getElementById("password").value;
   if (pass === "1234") {
     document.getElementById("login").style.display = "none";
-    document.getElementById("chatApp").style.display = "flex"; // on affiche le chat
+    
   } else {
     alert("Mot de passe incorrect");
   }
