@@ -99,6 +99,10 @@ html, body {
   font-size: 14px;
   border-radius: 18px;
   border: 1px solid #ccc;
+  resize: none;
+  overflow-y: hidden;
+  min-height: 36px;
+  max-height: 120px;
 }
 
 #imageInput {
