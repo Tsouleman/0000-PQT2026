@@ -2,18 +2,18 @@
 // INITIALISATION FIREBASE
 // -------------------------
 const firebaseConfig = {
-apiKey:"AIzaSyCmw1nlfvNhzrH4_0f72lMQthgiToCLBzI",
-authDomain:"pqt2026.firebaseapp.com",
-databaseURL:"https://pqt2026-default-rtdb.firebaseio.com",
-projectId:"pqt2026",
-storageBucket:"pqt2026.firebasestorage.app"
+  apiKey: "TA_CLE",
+  authDomain: "TON_DOMAINE",
+  databaseURL: "TON_URL",
+  projectId: "TON_ID",
+  storageBucket: "TON_BUCKET"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const storage = firebase.storage();
 
-// Utilisateur unique
+// Utilisateur unique pour session
 const user = localStorage.getItem("chatUser") || "user" + Math.floor(Math.random() * 1000);
 localStorage.setItem("chatUser", user);
 
@@ -82,6 +82,7 @@ function formatTime(ts) {
 // -------------------------
 function startChatListener() {
   const chat = document.getElementById("chat");
+
   db.ref("messages").on("value", snapshot => {
     chat.innerHTML = "";
     const data = snapshot.val();
@@ -164,3 +165,4 @@ document.getElementById("messageInput").addEventListener("keydown", function (ev
     sendMessage();
   }
 });
+
