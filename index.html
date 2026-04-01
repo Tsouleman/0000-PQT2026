@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Chat 0000</title>
+
+<title>Chat privé</title>
 
 <link rel="stylesheet" href="style.css">
 
@@ -17,18 +19,27 @@
 <body>
 
 <div id="login">
-<input id="password" placeholder="mot de passe">
+
+<h2>Accès au chat</h2>
+
+<input type="password" id="password" placeholder="Mot de passe">
+
 <button onclick="login()">Entrer</button>
+
 </div>
 
-<div id="chatApp" style="display:none">
+<div id="chatApp">
 
 <div id="chat"></div>
 
 <div id="inputArea">
+
 <input id="messageInput" placeholder="Message...">
+
 <input type="file" id="imageInput">
+
 <button onclick="sendMessage()">Envoyer</button>
+
 </div>
 
 </div>
@@ -36,5 +47,5 @@
 <script src="script.js"></script>
 
 </body>
-</html>
 
+</html>
