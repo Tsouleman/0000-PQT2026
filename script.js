@@ -24,7 +24,12 @@ function login() {
   const pass = document.getElementById("password").value;
   if (pass === "1234") {
     document.getElementById("login").style.display = "none";
-    document.getElementById("chatApp").style.display = "flex"; // Affiche chat uniquement ici
+    document.getElementById("chatApp").style.display = "flex";
+
+    // ----------------------
+    // LANCER L'ÉCOUTE FIREBASE
+    // ----------------------
+    startChatListener();
   } else {
     alert("Mot de passe incorrect");
   }
@@ -77,65 +82,66 @@ function formatTime(ts) {
 }
 
 // -------------------------
-// AFFICHAGE CHAT
+// ÉCOUTE CHAT (APRES LOGIN)
 // -------------------------
-const chat = document.getElementById("chat");
+function startChatListener() {
+  const chat = document.getElementById("chat");
 
-db.ref("messages").on("value", snapshot => {
-  chat.innerHTML = "";
-  const data = snapshot.val();
-  for (let id in data) {
-    const msg = data[id];
-    const div = document.createElement("div");
-    div.className = "message " + (msg.sender === user ? "mine" : "other");
+  db.ref("messages").on("value", snapshot => {
+    chat.innerHTML = "";
+    const data = snapshot.val();
+    if (!data) return;
 
-    // Statut lu
-    let status = "✓";
-    let readTime = "";
+    for (let id in data) {
+      const msg = data[id];
+      const div = document.createElement("div");
+      div.className = "message " + (msg.sender === user ? "mine" : "other");
 
-    if (msg.seenBy && msg.seenBy.length > 0) {
-      status = "✓✓";
+      // Statut lu
+      let status = "✓";
+      let readTime = "";
+      if (msg.seenBy && msg.seenBy.length > 0) {
+        status = "✓✓";
+        if (msg.sender === user) {
+          const others = msg.seenBy.filter(e => e.user !== user && e.time);
+          if (others.length > 0) {
+            const lastReadTime = Math.max(...others.map(e => e.time));
+            readTime = ` (vu ${formatTime(lastReadTime)})`;
+          }
+        }
+      }
+
+      // Actions pour l'auteur
+      let actions = "";
       if (msg.sender === user) {
-        // Dernier temps de lecture des autres utilisateurs
-        const others = msg.seenBy.filter(e => e.user !== user && e.time);
-        if (others.length > 0) {
-          const lastReadTime = Math.max(...others.map(e => e.time));
-          readTime = ` (vu ${formatTime(lastReadTime)})`;
+        actions = `
+          <span class="actions" onclick="editMessage('${id}','${msg.text}')">modifier</span>
+          <span class="actions" onclick="deleteMessage('${id}')">supprimer</span>
+        `;
+      }
+
+      div.innerHTML = `
+        ${msg.text || ""}
+        ${msg.image ? "<img src='" + msg.image + "'>" : ""}
+        <div class="status">${status} ${formatTime(msg.timestamp)}${readTime}</div>
+        ${actions}
+      `;
+      chat.appendChild(div);
+
+      // Marquer comme lu pour les autres
+      if (msg.sender !== user) {
+        if (!msg.seenBy) msg.seenBy = [];
+        const alreadySeen = msg.seenBy.find(e => e.user === user);
+        if (!alreadySeen) {
+          msg.seenBy.push({ user: user, time: Date.now() });
+          db.ref("messages/" + id).update({ seenBy: msg.seenBy });
         }
       }
     }
 
-    // Actions seulement pour l'auteur
-    let actions = "";
-    if (msg.sender === user) {
-      actions = `
-        <span class="actions" onclick="editMessage('${id}','${msg.text}')">modifier</span>
-        <span class="actions" onclick="deleteMessage('${id}')">supprimer</span>
-      `;
-    }
-
-    div.innerHTML = `
-      ${msg.text || ""}
-      ${msg.image ? "<img src='" + msg.image + "'>" : ""}
-      <div class="status">${status} ${formatTime(msg.timestamp)}${readTime}</div>
-      ${actions}
-    `;
-
-    chat.appendChild(div);
-
-    // Marquer comme lu pour les autres utilisateurs
-    if (msg.sender !== user) {
-      if (!msg.seenBy) msg.seenBy = [];
-      const alreadySeen = msg.seenBy.find(e => e.user === user);
-      if (!alreadySeen) {
-        msg.seenBy.push({ user: user, time: Date.now() });
-        db.ref("messages/" + id).update({ seenBy: msg.seenBy });
-      }
-    }
-  }
-
-  chat.scrollTop = chat.scrollHeight;
-});
+    chat.scrollTop = chat.scrollHeight;
+  });
+}
 
 // -------------------------
 // SUPPRIMER
@@ -150,16 +156,4 @@ function deleteMessage(id) {
 function editMessage(id, text) {
   const newText = prompt("Modifier message", text);
   if (newText) {
-    db.ref("messages/" + id).update({ text: newText });
-  }
-}
-
-// -------------------------
-// ENVOI AVEC ENTER
-// -------------------------
-document.getElementById("messageInput").addEventListener("keydown", function (event) {
-  if (event.key === "Enter" && !event.shiftKey) {
-    event.preventDefault();
-    sendMessage();
-  }
-});
+    db.ref
