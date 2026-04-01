@@ -19,11 +19,12 @@
 <div id="chatApp">
   <div id="chat"></div>
   <div id="inputArea">
-    <input id="messageInput" placeholder="Écrire un message...">
+    <textarea id="messageInput" placeholder="Écrire un message..." rows="1"></textarea>
     <input type="file" id="imageInput">
     <button onclick="sendMessage()">Envoyer</button>
   </div>
 </div>
+
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
