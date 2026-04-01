@@ -101,18 +101,28 @@ html, body {
 
 #messageInput {
   flex: 1;
-  padding: 12px;       /* plus grand pour confort */
-  font-size: 16px;     /* légèrement plus grand */
-  border-radius: 20px; 
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 20px;
   border: 1px solid #ccc;
   resize: none;
   overflow-y: hidden;
-  min-height: 48px;    /* plus haut que 36px */
-  max-height: 150px;   /* peut s’agrandir */
+  min-height: 48px;
+  max-height: 150px;
 }
 
-#imageInput {
-  width: 80px;
+#cameraLabel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  background: #128c7e;
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  user-select: none;
 }
 
 #inputArea button {
@@ -131,6 +141,7 @@ html, body {
 button {
   cursor: pointer;
 }
+
 
 
 
