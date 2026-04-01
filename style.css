@@ -101,28 +101,37 @@ html, body {
 
 #messageInput {
   flex: 1;
-  padding: 8px;
-  font-size: 14px;
-  border-radius: 18px;
+  padding: 12px;       /* plus grand pour confort */
+  font-size: 16px;     /* légèrement plus grand */
+  border-radius: 20px; 
   border: 1px solid #ccc;
   resize: none;
   overflow-y: hidden;
-  min-height: 36px;
-  max-height: 120px;
+  min-height: 48px;    /* plus haut que 36px */
+  max-height: 150px;   /* peut s’agrandir */
 }
 
 #imageInput {
   width: 80px;
 }
 
-button {
-  padding: 8px 12px;
-  border-radius: 18px;
-  border: none;
-  cursor: pointer;
+#inputArea button {
+  padding: 0 12px;
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  border-radius: 50%;
   background: #128c7e;
   color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+button {
+  cursor: pointer;
+}
+
 
 
 
