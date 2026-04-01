@@ -1,107 +1,92 @@
-body{
-
-margin:0;
-font-family:Arial;
-background:#e5ddd5;
-height:100vh;
-display:flex;
-flex-direction:column;
-
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: sans-serif;
 }
 
-#login{
-
-margin:auto;
-text-align:center;
-
+#login, #chatApp {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
-#chatApp{
-
-display:none;
-max-width:700px;
-margin:auto;
-width:100%;
-height:100vh;
-display:flex;
-flex-direction:column;
-
+#chatApp {
+  display: none;
+  flex-direction: column;
+  height: 100vh;
+  display: flex;
 }
 
-#chat{
-
-flex:1;
-overflow-y:auto;
-padding:10px;
-display:flex;
-flex-direction:column;
-
+#chat {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 5px;
 }
 
-.message{
-
-max-width:70%;
-padding:10px;
-margin:5px;
-border-radius:10px;
-word-wrap:break-word;
-
+.message {
+  padding: 5px 10px;
+  margin: 5px 0;
+  border-radius: 15px;
+  max-width: 80%;
+  word-wrap: break-word;
 }
 
-.mine{
-
-background:#dcf8c6;
-align-self:flex-end;
-
+.message.mine {
+  background: #dcf8c6;
+  margin-left: auto;
 }
 
-.other{
-
-background:white;
-align-self:flex-start;
-
+.message.other {
+  background: #fff;
+  margin-right: auto;
 }
 
-.status{
-
-font-size:11px;
-color:gray;
-text-align:right;
-
+.message img {
+  max-width: 100%;
+  display: block;
+  margin-top: 5px;
+  border-radius: 10px;
 }
 
-.actions{
-
-font-size:11px;
-cursor:pointer;
-margin-left:8px;
-color:#555;
-
+.status {
+  font-size: 0.8em;
+  color: #555;
+  margin-top: 2px;
 }
 
-#inputArea{
-
-display:flex;
-padding:10px;
-background:white;
-border-top:1px solid #ccc;
-
+.actions {
+  font-size: 0.7em;
+  color: blue;
+  margin-left: 5px;
+  cursor: pointer;
 }
 
-#messageInput{
-
-flex:1;
-padding:10px;
-font-size:16px;
-
+#inputArea {
+  position: sticky;
+  bottom: 0;
+  background: white;
+  display: flex;
+  gap: 5px;
+  padding: 5px;
 }
 
-img{
+#messageInput {
+  flex: 1;
+  padding: 5px;
+  font-size: 16px;
+}
 
-max-width:100%;
-border-radius:6px;
-margin-top:5px;
+#imageInput {
+  width: 80px;
+}
 
+button {
+  padding: 5px 10px;
+  cursor: pointer;
 }
 
 
