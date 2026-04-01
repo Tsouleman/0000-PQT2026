@@ -1,10 +1,11 @@
 const firebaseConfig = {
 
-apiKey:"TA_CLE",
-authDomain:"TON_DOMAINE",
-databaseURL:"TON_URL",
-projectId:"TON_ID",
-storageBucket:"TON_BUCKET"
+apiKey:"AIzaSyCmw1nlfvNhzrH4_0f72lMQthgiToCLBzI",
+authDomain:"pqt2026.firebaseapp.com",
+databaseURL:"https://pqt2026-default-rtdb.firebaseio.com",
+projectId:"pqt2026",
+storageBucket:"pqt2026.firebasestorage.app"
+
 
 };
 
