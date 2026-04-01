@@ -3,81 +3,103 @@ html, body {
   padding: 0;
   height: 100%;
   font-family: sans-serif;
+  background: #ece5dd;
 }
 
 #login, #chatApp {
   width: 100%;
   max-width: 500px;
   margin: 0 auto;
-  padding: 10px;
   box-sizing: border-box;
+  padding: 10px;
+}
+
+#login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+#login input, #login button {
+  width: 80%;
+  padding: 10px;
+  margin: 5px 0;
+  font-size: 16px;
 }
 
 #chatApp {
   display: none;
   flex-direction: column;
   height: 100vh;
-  display: flex;
 }
 
 #chat {
   flex: 1;
   overflow-y: auto;
-  border: 1px solid #ccc;
-  padding: 5px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .message {
-  padding: 5px 10px;
-  margin: 5px 0;
-  border-radius: 15px;
+  padding: 8px 12px;
+  border-radius: 18px;
   max-width: 80%;
   word-wrap: break-word;
+  position: relative;
+  font-size: 14px;
 }
 
 .message.mine {
+  align-self: flex-end;
   background: #dcf8c6;
-  margin-left: auto;
 }
 
 .message.other {
+  align-self: flex-start;
   background: #fff;
-  margin-right: auto;
 }
 
 .message img {
   max-width: 100%;
-  display: block;
   margin-top: 5px;
   border-radius: 10px;
 }
 
 .status {
-  font-size: 0.8em;
+  font-size: 0.7em;
   color: #555;
   margin-top: 2px;
+  text-align: right;
 }
 
 .actions {
   font-size: 0.7em;
   color: blue;
-  margin-left: 5px;
   cursor: pointer;
+  margin-left: 5px;
 }
 
 #inputArea {
-  position: sticky;
-  bottom: 0;
-  background: white;
   display: flex;
   gap: 5px;
   padding: 5px;
+  position: sticky;
+  bottom: 0;
+  background: #ece5dd;
+  align-items: flex-end;
 }
 
 #messageInput {
   flex: 1;
-  padding: 5px;
-  font-size: 16px;
+  padding: 8px;
+  font-size: 14px;
+  resize: none;
+  border-radius: 18px;
+  border: 1px solid #ccc;
 }
 
 #imageInput {
@@ -85,8 +107,14 @@ html, body {
 }
 
 button {
-  padding: 5px 10px;
+  padding: 8px 12px;
+  border-radius: 18px;
+  border: none;
   cursor: pointer;
+  background: #128c7e;
+  color: white;
 }
+
+
 
 
