@@ -2,18 +2,18 @@
 // INITIALISATION FIREBASE
 // -------------------------
 const firebaseConfig = {
-apiKey:"AIzaSyCmw1nlfvNhzrH4_0f72lMQthgiToCLBzI",
-authDomain:"pqt2026.firebaseapp.com",
-databaseURL:"https://pqt2026-default-rtdb.firebaseio.com",
-projectId:"pqt2026",
-storageBucket:"pqt2026.firebasestorage.app"
+  apiKey: "TA_CLE",
+  authDomain: "TON_DOMAINE",
+  databaseURL: "TON_URL",
+  projectId: "TON_ID",
+  storageBucket: "TON_BUCKET"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const storage = firebase.storage();
 
-// Utilisateur unique pour session
+// Utilisateur unique
 const user = localStorage.getItem("chatUser") || "user" + Math.floor(Math.random() * 1000);
 localStorage.setItem("chatUser", user);
 
@@ -25,10 +25,6 @@ function login() {
   if (pass === "1234") {
     document.getElementById("login").style.display = "none";
     document.getElementById("chatApp").style.display = "flex";
-
-    // ----------------------
-    // LANCER L'ÉCOUTE FIREBASE
-    // ----------------------
     startChatListener();
   } else {
     alert("Mot de passe incorrect");
@@ -86,7 +82,6 @@ function formatTime(ts) {
 // -------------------------
 function startChatListener() {
   const chat = document.getElementById("chat");
-
   db.ref("messages").on("value", snapshot => {
     chat.innerHTML = "";
     const data = snapshot.val();
@@ -128,7 +123,7 @@ function startChatListener() {
       `;
       chat.appendChild(div);
 
-      // Marquer comme lu pour les autres
+      // Marquer comme lu
       if (msg.sender !== user) {
         if (!msg.seenBy) msg.seenBy = [];
         const alreadySeen = msg.seenBy.find(e => e.user === user);
@@ -156,4 +151,16 @@ function deleteMessage(id) {
 function editMessage(id, text) {
   const newText = prompt("Modifier message", text);
   if (newText) {
-    db.ref
+    db.ref("messages/" + id).update({ text: newText });
+  }
+}
+
+// -------------------------
+// ENVOI AVEC ENTER
+// -------------------------
+document.getElementById("messageInput").addEventListener("keydown", function (event) {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    sendMessage();
+  }
+});
