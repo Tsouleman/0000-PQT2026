@@ -42,23 +42,29 @@ function sendMessage() {
   if (!text && !file) return;
 
   if (file) {
-    const storageRef = storage.ref("images/" + Date.now() + "_" + file.name);
-    storageRef.put(file).then(() => {
-      storageRef.getDownloadURL().then((url) => {
-        db.ref("messages").push({
-          text: text || "",
-          image: url,
-          sender: user,
-          timestamp: Date.now(),
-          seenBy: []
+    const fileName = Date.now() + "_" + file.name.replace(/\s/g, "_");
+    const storageRef = storage.ref("images/" + fileName);
+
+    const uploadTask = storageRef.put(file);
+
+    uploadTask.on('state_changed',
+      null,
+      (error) => { alert("Erreur lors de l'envoi de l'image: " + error.message); },
+      () => {
+        uploadTask.snapshot.ref.getDownloadURL().then((url) => {
+          db.ref("messages").push({
+            text: text || "",
+            image: url,
+            sender: user,
+            timestamp: Date.now(),
+            seenBy: []
+          });
+          document.getElementById("messageInput").value = "";
+          fileInput.value = "";
+          autoResizeTextarea();
         });
-        document.getElementById("messageInput").value = "";
-        fileInput.value = "";
-        autoResizeTextarea();
-      });
-    }).catch(err => {
-      alert("Erreur lors de l'envoi de l'image: " + err.message);
-    });
+      }
+    );
   } else {
     db.ref("messages").push({
       text: text,
@@ -173,7 +179,4 @@ function autoResizeTextarea() {
   messageInput.style.height = 'auto';
   messageInput.style.height = messageInput.scrollHeight + 'px';
 }
-
-
-
 
