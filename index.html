@@ -1,52 +1,34 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="fr">
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<title>Chat privé</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat sécurisé</title>
 <link rel="stylesheet" href="style.css">
-
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-
 </head>
-
 <body>
 
+<!-- LOGIN -->
 <div id="login">
-
-<h2>Accès au chat</h2>
-
-<input type="password" id="password" placeholder="Mot de passe">
-
-<button onclick="login()">Entrer</button>
-
-</div>
-
-<div id="login">
-   <input type="password" id="password" placeholder="Mot de passe">
+  <h2>Accès au chat</h2>
+  <input type="password" id="password" placeholder="Mot de passe">
   <button onclick="login()">Entrer</button>
 </div>
 
-<div id="chatApp" style="display:none">
+<!-- CHAT -->
+<div id="chatApp">
   <div id="chat"></div>
   <div id="inputArea">
-    <input id="messageInput" placeholder="Message...">
+    <input id="messageInput" placeholder="Écrire un message...">
     <input type="file" id="imageInput">
     <button onclick="sendMessage()">Envoyer</button>
   </div>
 </div>
 
-
-</div>
-
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 <script src="script.js"></script>
-
 </body>
-
 </html>
+
