@@ -63,6 +63,7 @@ function sendMessage() {
 
   document.getElementById("messageInput").value = "";
   document.getElementById("imageInput").value = "";
+  autoResizeTextarea();
 }
 
 // -------------------------
@@ -78,7 +79,7 @@ function formatTime(ts) {
 }
 
 // -------------------------
-// ÉCOUTE CHAT (APRES LOGIN)
+// ÉCOUTE CHAT
 // -------------------------
 function startChatListener() {
   const chat = document.getElementById("chat");
@@ -159,9 +160,22 @@ function editMessage(id, text) {
 // -------------------------
 // ENVOI AVEC ENTER
 // -------------------------
-document.getElementById("messageInput").addEventListener("keydown", function (event) {
+const messageInput = document.getElementById("messageInput");
+
+messageInput.addEventListener("keydown", function (event) {
   if (event.key === "Enter" && !event.shiftKey) {
     event.preventDefault();
     sendMessage();
   }
 });
+
+// -------------------------
+// AUTO RESIZE TEXTAREA
+// -------------------------
+messageInput.addEventListener('input', autoResizeTextarea);
+
+function autoResizeTextarea() {
+  messageInput.style.height = 'auto';
+  messageInput.style.height = messageInput.scrollHeight + 'px';
+}
+
