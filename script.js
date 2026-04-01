@@ -99,7 +99,6 @@ function startChatListener() {
       const div = document.createElement("div");
       div.className = "message " + (msg.sender === user ? "mine" : "other");
 
-      // Statut lu
       let status = "✓";
       let readTime = "";
       if (msg.seenBy && msg.seenBy.length > 0) {
@@ -113,7 +112,6 @@ function startChatListener() {
         }
       }
 
-      // Actions pour l'auteur
       let actions = "";
       if (msg.sender === user) {
         actions = `
@@ -130,7 +128,6 @@ function startChatListener() {
       `;
       chat.appendChild(div);
 
-      // Marquer comme lu
       if (msg.sender !== user) {
         if (!msg.seenBy) msg.seenBy = [];
         const alreadySeen = msg.seenBy.find(e => e.user === user);
@@ -146,36 +143,21 @@ function startChatListener() {
 }
 
 // -------------------------
-// SUPPRIMER
+// SUPPRIMER / MODIFIER / VIDER CHAT
 // -------------------------
-function deleteMessage(id) {
-  db.ref("messages/" + id).remove();
-}
-
-// -------------------------
-// MODIFIER
-// -------------------------
+function deleteMessage(id) { db.ref("messages/" + id).remove(); }
 function editMessage(id, text) {
   const newText = prompt("Modifier message", text);
-  if (newText) {
-    db.ref("messages/" + id).update({ text: newText });
-  }
+  if (newText) db.ref("messages/" + id).update({ text: newText });
 }
-
-// -------------------------
-// VIDER CHAT
-// -------------------------
 function clearChat() {
-  if (confirm("Voulez-vous vraiment supprimer tous les messages ?")) {
-    db.ref("messages").remove();
-  }
+  if (confirm("Voulez-vous vraiment supprimer tous les messages ?")) db.ref("messages").remove();
 }
 
 // -------------------------
 // ENVOI AVEC ENTER
 // -------------------------
 const messageInput = document.getElementById("messageInput");
-
 messageInput.addEventListener("keydown", function (event) {
   if (event.key === "Enter" && !event.shiftKey) {
     event.preventDefault();
@@ -187,11 +169,11 @@ messageInput.addEventListener("keydown", function (event) {
 // AUTO RESIZE TEXTAREA
 // -------------------------
 messageInput.addEventListener('input', autoResizeTextarea);
-
 function autoResizeTextarea() {
   messageInput.style.height = 'auto';
   messageInput.style.height = messageInput.scrollHeight + 'px';
 }
+
 
 
 
