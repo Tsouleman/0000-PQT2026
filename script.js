@@ -22,7 +22,7 @@ localStorage.setItem("chatUser", user);
 // -------------------------
 function login() {
   const pass = document.getElementById("password").value;
-  if (pass === "1234") {
+  if (pass === "Crush0000") {
     document.getElementById("login").style.display = "none";
     document.getElementById("chatApp").style.display = "flex";
     startChatListener();
