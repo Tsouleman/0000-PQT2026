@@ -3,28 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chat sécurisé</title>
+<title>Chat 0000</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <!-- LOGIN -->
 <div id="login">
-  <h2>Accès</h2>
+  <h2>Accès...</h2>
   <input type="password" id="password" placeholder="Mot de passe">
   <button onclick="login()">Entrer</button>
 </div>
 
 <!-- CHAT -->
 <div id="chatApp">
+  <div id="chatControls">
+    <button onclick="clearChat()" style="background:red;color:white;padding:5px 10px;border:none;border-radius:5px;cursor:pointer;">Vider le chat</button>
+  </div>
   <div id="chat"></div>
   <div id="inputArea">
     <textarea id="messageInput" placeholder="Écrire un message..." rows="1"></textarea>
-    <input type="file" id="imageInput">
+    <input type="file" id="imageInput" accept="image/*">
     <button onclick="sendMessage()">Envoyer</button>
   </div>
 </div>
-
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
