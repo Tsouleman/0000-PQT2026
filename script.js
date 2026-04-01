@@ -13,7 +13,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const storage = firebase.storage();
 
-// Utilisateur unique pour session
+// Utilisateur unique
 const user = localStorage.getItem("chatUser") || "user" + Math.floor(Math.random() * 1000);
 localStorage.setItem("chatUser", user);
 
@@ -165,4 +165,3 @@ document.getElementById("messageInput").addEventListener("keydown", function (ev
     sendMessage();
   }
 });
-
