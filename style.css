@@ -1,36 +1,64 @@
 body{
-font-family:Arial;
-background:#f2f2f2;
+font-family: Arial;
+background:#e5ddd5;
+margin:0;
 }
 
 #chat{
 height:400px;
 overflow-y:auto;
-background:white;
 padding:10px;
+display:flex;
+flex-direction:column;
 }
 
 .message{
-background:#e3f2fd;
-padding:8px;
+max-width:70%;
+padding:10px;
 margin:5px;
-border-radius:8px;
+border-radius:10px;
+position:relative;
+word-wrap:break-word;
+}
+
+.mine{
+background:#dcf8c6;
+align-self:flex-end;
+}
+
+.other{
+background:white;
+align-self:flex-start;
+}
+
+.status{
+font-size:11px;
+color:gray;
+text-align:right;
+margin-top:5px;
+}
+
+.actions{
+font-size:11px;
+cursor:pointer;
+color:#666;
+margin-left:8px;
 }
 
 img{
 max-width:200px;
-display:block;
+border-radius:6px;
 margin-top:5px;
 }
 
-.status{
-font-size:12px;
-color:gray;
+#inputArea{
+display:flex;
+padding:10px;
+background:white;
+border-top:1px solid #ddd;
 }
 
-.actions{
-font-size:12px;
-cursor:pointer;
-color:blue;
-margin-left:10px;
+#messageInput{
+flex:1;
+padding:8px;
 }
