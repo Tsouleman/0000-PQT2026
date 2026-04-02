@@ -1,4 +1,3 @@
-
 // ----------------------------------------------------
 // CONFIG SUPABASE
 // ----------------------------------------------------
@@ -39,7 +38,7 @@ async function sendMessage() {
   const fileInput = document.getElementById("imageInput");
   const file = fileInput.files[0];
 
-  console.log("📷 Fichier reçu par input :", file);
+  console.log("📷 Fichier reçu :", file);
 
   if (!text && !file) return;
 
@@ -58,7 +57,6 @@ async function sendMessage() {
     console.log("📥 Réponse upload :", response);
 
     if (response.error) {
-      console.error("❌ Upload error :", response.error);
       alert("Erreur upload image : " + response.error.message);
       return;
     }
@@ -70,19 +68,12 @@ async function sendMessage() {
     console.log("✅ URL publique :", imageUrl);
   }
 
-  const { error: insertError } = await supabaseClient
-    .from("messages")
-    .insert({
-      sender: user,
-      text: text || "",
-      image_url: imageUrl,
-      seen_by: []
-    });
-
-  if (insertError) {
-    console.error("Erreur insert:", insertError);
-    alert("Erreur insertion : " + insertError.message);
-  }
+  await supabaseClient.from("messages").insert({
+    sender: user,
+    text: text || "",
+    image_url: imageUrl,
+    seen_by: []
+  });
 
   document.getElementById("messageInput").value = "";
   fileInput.value = "";
@@ -97,11 +88,7 @@ function listenMessages() {
     .channel("messages_channel")
     .on(
       "postgres_changes",
-      {
-        event: "INSERT",
-        schema: "public",
-        table: "messages"
-      },
+      { event: "INSERT", schema: "public", table: "messages" },
       () => updateMessages()
     )
     .subscribe();
@@ -110,20 +97,15 @@ function listenMessages() {
 }
 
 // ----------------------------------------------------
-// AFFICHAGE MESSAGES
+// AFFICHAGE DES MESSAGES
 // ----------------------------------------------------
 async function updateMessages() {
   const chat = document.getElementById("chat");
 
-  const { data: messages, error } = await supabaseClient
+  const { data: messages } = await supabaseClient
     .from("messages")
     .select("*")
     .order("id", { ascending: true });
-
-  if (error) {
-    console.error("Erreur read messages:", error);
-    return;
-  }
 
   chat.innerHTML = "";
 
@@ -132,7 +114,6 @@ async function updateMessages() {
     div.className = "message " + (msg.sender === user ? "mine" : "other");
 
     let html = "";
-
     if (msg.text) html += `<span>${msg.text}</span>`;
     if (msg.image_url) html += `<br>${msg.image_url}`;
 
@@ -182,3 +163,4 @@ function autoResizeTextarea() {
 document.getElementById("cameraButton").addEventListener("click", () => {
   document.getElementById("imageInput").click();
 });
+
