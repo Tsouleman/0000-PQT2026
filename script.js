@@ -31,7 +31,7 @@ function login() {
 }
 
 // ----------------------------------------------------
-// ENVOI MESSAGE + PHOTO (corrigé pour Android & iOS)
+// ENVOI MESSAGE + PHOTO (iOS + Android OK)
 // ----------------------------------------------------
 async function sendMessage() {
   const text = document.getElementById("messageInput").value.trim();
@@ -42,28 +42,33 @@ async function sendMessage() {
 
   let imageUrl = null;
 
-  // ✅ UPLOAD IMAGE AVEC DOSSIER "photos/"
+  // ✅ UPLOAD IMAGE (avec dossier obligatoire "photos/")
   if (file) {
     const fileName =
       "photo_" + Date.now() + "_" + file.name.replace(/\s/g, "_");
 
     const path = "photos/" + fileName;
 
-    const { data, error } = await supabaseClient.storage
+    console.log("📤 Upload →", path, file);
+
+    const response = await supabaseClient.storage
       .from("chat-images")
       .upload(path, file);
 
-    if (error) {
-      alert("Erreur upload image : " + error.message);
-      console.error("UPLOAD ERROR:", error);
+    console.log("📥 Réponse upload :", response);
+
+    if (response.error) {
+      console.error("❌ Upload error COMPLET :", response.error);
+      alert("Erreur upload image : " + response.error.message);
       return;
     }
 
+    // ✅ URL publique
     imageUrl = supabaseClient.storage
       .from("chat-images")
       .getPublicUrl(path).data.publicUrl;
 
-    console.log("✅ Image URL:", imageUrl);
+    console.log("✅ URL publique :", imageUrl);
   }
 
   // ✅ INSERT MESSAGE
@@ -87,98 +92,3 @@ async function sendMessage() {
 }
 
 // ----------------------------------------------------
-// TEMPS RÉEL (Version SUPABASE 2026 ✅)
-// ----------------------------------------------------
-function listenMessages() {
-  supabaseClient
-    .channel("messages_channel")
-    .on(
-      "postgres_changes",
-      {
-        event: "INSERT",
-        schema: "public",
-        table: "messages"
-      },
-      (payload) => {
-        console.log("✅ Realtime reçu :", payload);
-        updateMessages();
-      }
-    )
-    .subscribe();
-
-  updateMessages();
-}
-
-// ----------------------------------------------------
-// RÉCUPÉRATION & AFFICHAGE DU CHAT
-// ----------------------------------------------------
-async function updateMessages() {
-  const chat = document.getElementById("chat");
-
-  const { data: messages, error } = await supabaseClient
-    .from("messages")
-    .select("*")
-    .order("id", { ascending: true });
-
-  if (error) {
-    console.error("Erreur read messages:", error);
-    return;
-  }
-
-  chat.innerHTML = "";
-
-  messages.forEach((msg) => {
-    const div = document.createElement("div");
-    div.className = "message " + (msg.sender === user ? "mine" : "other");
-
-    let html = "";
-    if (msg.text) html += `<span>${msg.text}</span>`;
-    
-    // ✅ AFFICHE L’IMAGE CORRECTEMENT
-    if (msg.image_url)
-      html += `<br><img src="${msg.image_url}" style="max-width:100%;border-radius:10px;">`;
-
-    div.innerHTML = html;
-    chat.appendChild(div);
-  });
-
-  chat.scrollTop = chat.scrollHeight;
-}
-
-// ----------------------------------------------------
-// SUPPRESSION DU CHAT + IMAGES
-// ----------------------------------------------------
-async function clearChat() {
-  if (!confirm("Supprimer tous les messages ?")) return;
-
-  const { data: messages } = await supabaseClient
-    .from("messages")
-    .select("image_url");
-
-  for (let msg of messages) {
-    if (msg.image_url) {
-      const path = msg.image_url.split("/").pop();
-      await supabaseClient.storage.from("chat-images").remove(["photos/" + path]);
-    }
-  }
-
-  await supabaseClient.from("messages").delete().neq("id", 0);
-}
-
-// ----------------------------------------------------
-// AUTO RESIZE TEXTAREA
-// ----------------------------------------------------
-const messageInput = document.getElementById("messageInput");
-messageInput.addEventListener("input", autoResizeTextarea);
-
-function autoResizeTextarea() {
-  messageInput.style.height = "auto";
-  messageInput.style.height = messageInput.scrollHeight + "px";
-}
-
-// ----------------------------------------------------
-// OUVERTURE APPAREIL PHOTO
-// ----------------------------------------------------
-document.getElementById("cameraButton").addEventListener("click", () => {
-  document.getElementById("imageInput").click();
-});
