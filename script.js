@@ -42,10 +42,10 @@ async function compressImage(file) {
 
   if (w > MAX || h > MAX) {
     if (w > h) {
-      h = h * MAX / w;
+      h = (h * MAX) / w;
       w = MAX;
     } else {
-      w = w * MAX / h;
+      w = (w * MAX) / h;
       h = MAX;
     }
   }
@@ -64,7 +64,7 @@ async function compressImage(file) {
 ------------------------------------------------------------- */
 let pendingFile = null;
 
-imageInput.addEventListener("change", e => {
+document.getElementById("imageInput").addEventListener("change", e => {
   const file = e.target.files[0];
   if (!file) return;
 
@@ -114,7 +114,7 @@ async function sendImage(file) {
 }
 
 /* -------------------------------------------------------------
-   ENVOI MESSAGE (TEXTE + PHOTO)
+   ENVOI MESSAGE (TEXTE + IMAGE)
 ------------------------------------------------------------- */
 async function sendMessage(text, blob) {
   let imageUrl = null;
@@ -142,7 +142,7 @@ async function sendMessage(text, blob) {
 }
 
 /* -------------------------------------------------------------
-   TEMPS RÉEL
+   REALTIME
 ------------------------------------------------------------- */
 function listenMessages() {
   supabaseClient
@@ -171,7 +171,7 @@ function formatTime(ts) {
 }
 
 /* -------------------------------------------------------------
-   AFFICHAGE MESSAGES (TEXTE + PHOTO + ✓✓)
+   AFFICHAGE DES MESSAGES
 ------------------------------------------------------------- */
 async function updateMessages() {
   const { data: messages } = await supabaseClient
@@ -188,8 +188,7 @@ async function updateMessages() {
 
     let html = "";
 
-    if (msg.text)
-      html += `<span>${msg.text}</span>`;
+    if (msg.text) html += `<span>${msg.text}</span>`;
 
     if (msg.image_url)
       html += `<br>${msg.image_url}`;
