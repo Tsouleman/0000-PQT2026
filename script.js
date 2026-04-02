@@ -32,7 +32,7 @@ function login() {
 }
 
 // ----------------------------------------------------
-// ENVOI MESSAGE + PHOTO
+// ENVOI MESSAGE + PHOTO (Android / iOS / Desktop OK)
 // ----------------------------------------------------
 async function sendMessage() {
   const text = document.getElementById("messageInput").value.trim();
@@ -46,8 +46,7 @@ async function sendMessage() {
   let imageUrl = null;
 
   if (file) {
-    const fileName =
-      "photo_" + Date.now() + "_" + file.name.replace(/\s/g, "_");
+    const fileName = "photo_" + Date.now() + "_" + file.name.replace(/\s/g, "_");
     const path = "photos/" + fileName;
 
     console.log("📤 Upload →", path);
@@ -59,7 +58,6 @@ async function sendMessage() {
     console.log("📥 Réponse upload :", response);
 
     if (response.error) {
-      console.error("❌ Upload error :", response.error);
       alert("Erreur upload image : " + response.error.message);
       return;
     }
@@ -100,7 +98,7 @@ function listenMessages() {
 }
 
 // ----------------------------------------------------
-// AFFICHAGE DES MESSAGES + IMAGES
+// AFFICHAGE DES MESSAGES (AVEC IMAGE RÉELLE)
 // ----------------------------------------------------
 async function updateMessages() {
   const chat = document.getElementById("chat");
@@ -123,12 +121,11 @@ async function updateMessages() {
 
     let html = "";
 
-    // ✅ TEXTE
     if (msg.text) html += `<span>${msg.text}</span>`;
 
-    // ✅ AFFICHAGE IMAGE (en <img>)
+    // ✅ ✅ AFFICHAGE DE LA PHOTO EN <img>
     if (msg.image_url) {
-      html += `<br>${msg.image_url}`;
+      html += `<br><img src="${msg.image_url}" class="chat-photo">`;
     }
 
     div.innerHTML = html;
@@ -172,7 +169,7 @@ function autoResizeTextarea() {
 }
 
 // ----------------------------------------------------
-// CAMERA
+// CAMERA → Ouvre input
 // ----------------------------------------------------
 document.getElementById("cameraButton").addEventListener("click", () => {
   document.getElementById("imageInput").click();
