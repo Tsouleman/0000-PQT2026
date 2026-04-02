@@ -6,139 +6,136 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Identité pseudo-user
-let user = localStorage.getItem("chatUser") || "user" + Math.floor(Math.random() * 1000);
-localStorage.setItem("chatUser", user);
+// ✅ Identité pseudo-user (corrigé)
+let user = localStorage.getItem("chatUser");
+if (!user) {
+  user = "user" + Math.floor(Math.random() * 1000);
+  localStorage.setItem("chatUser", user);
+}
 
 // ----------------------------------------------------
 // LOGIN SIMPLE
 // ----------------------------------------------------
 function login() {
-    const pass = document.getElementById("password").value;
-    if (pass === "1234") {
-        document.getElementById("login").style.display = "none";
-        document.getElementById("chatApp").style.display = "flex";
-        listenMessages();
-    } else {
-        alert("Mot de passe incorrect");
-    }
+  const pass = document.getElementById("password").value;
+  if (pass === "1234") {
+    document.getElementById("login").style.display = "none";
+    document.getElementById("chatApp").style.display = "flex";
+    listenMessages();
+  } else {
+    alert("Mot de passe incorrect");
+  }
 }
 
 // ----------------------------------------------------
 // ENVOI MESSAGE + PHOTO
 // ----------------------------------------------------
 async function sendMessage() {
-    const text = document.getElementById("messageInput").value.trim();
-    const fileInput = document.getElementById("imageInput");
-    const file = fileInput.files[0];
+  const text = document.getElementById("messageInput").value.trim();
+  const fileInput = document.getElementById("imageInput");
+  const file = fileInput.files[0];
 
-    if (!text && !file) return;
+  if (!text && !file) return;
 
-    let imageUrl = null;
+  let imageUrl = null;
 
-    // UPLOAD IMAGE
-    if (file) {
-        const fileName = "photo_" + Date.now() + "_" + file.name.replace(/\s/g, "_");
+  if (file) {
+    const fileName = "photo_" + Date.now() + "_" + file.name.replace(/\s/g, "_");
 
-        const { data, error } = await supabaseClient.storage
-            .from("chat-images")
-            .upload(fileName, file);
+    const { data, error } = await supabaseClient.storage
+      .from("chat-images")
+      .upload(fileName, file);
 
-        if (error) {
-            alert("Erreur upload image : " + error.message);
-            return;
-        }
-
-        imageUrl = supabaseClient.storage
-            .from("chat-images")
-            .getPublicUrl(fileName).data.publicUrl;
+    if (error) {
+      alert("Erreur upload image : " + error.message);
+      return;
     }
 
-    // INSERT MESSAGE
-    await supabaseClient
-        .from("messages")
-        .insert({
-            sender: user,
-            text: text || "",
-            image_url: imageUrl,
-            seen_by: []
-        });
+    imageUrl = supabaseClient.storage
+      .from("chat-images")
+      .getPublicUrl(fileName).data.publicUrl;
+  }
 
-    document.getElementById("messageInput").value = "";
-    fileInput.value = "";
-    autoResizeTextarea();
+  await supabaseClient
+    .from("messages")
+    .insert({
+      sender: user,
+      text: text || "",
+      image_url: imageUrl,
+      seen_by: []
+    });
+
+  document.getElementById("messageInput").value = "";
+  fileInput.value = "";
+  autoResizeTextarea();
 }
 
 // ----------------------------------------------------
 // TEMPS RÉEL
 // ----------------------------------------------------
 function listenMessages() {
-    supabaseClient
-        .channel("messages_channel")
-        .on(
-            "postgres_changes",
-            { event: "*", schema: "public", table: "messages" },
-            payload => {
-                updateMessages();
-            }
-        )
-        .subscribe();
+  supabaseClient
+    .channel("messages_channel")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "messages" },
+      payload => {
+        updateMessages();
+      }
+    )
+    .subscribe();
 
-    updateMessages();
+  updateMessages();
 }
 
 async function updateMessages() {
-    const chat = document.getElementById("chat");
+  const chat = document.getElementById("chat");
 
-    const { data: messages, error } = await supabaseClient
-        .from("messages")
-        .select("*")
-        .order("id", { ascending: true });
+  const { data: messages, error } = await supabaseClient
+    .from("messages")
+    .select("*")
+    .order("id", { ascending: true });
 
-    if (error) {
-        console.error("Erreur read messages:", error);
-        return;
-    }
+  if (error) {
+    console.error("Erreur read messages:", error);
+    return;
+  }
 
-    chat.innerHTML = "";
+  chat.innerHTML = "";
 
-    messages.forEach(msg => {
-        const div = document.createElement("div");
-        div.className = "message " + (msg.sender === user ? "mine" : "other");
+  messages.forEach(msg => {
+    const div = document.createElement("div");
+    div.className = "message " + (msg.sender === user ? "mine" : "other");
 
-        let html = "";
+    let html = "";
+    if (msg.text) html += `<span>${msg.text}</span>`;
+    if (msg.image_url) html += `<br><img src="${msg.image_url}">`;
 
-        if (msg.text) html += `<span>${msg.text}</span>`;
-        if (msg.image_url) html += `<br><img src="${msg.image_url}">`;
+    div.innerHTML = html;
+    chat.appendChild(div);
+  });
 
-        div.innerHTML = html;
-
-        chat.appendChild(div);
-    });
-
-    chat.scrollTop = chat.scrollHeight;
+  chat.scrollTop = chat.scrollHeight;
 }
 
 // ----------------------------------------------------
-// VIDER LE CHAT + SUPPRESSION IMAGES STOCKÉES
+// VIDER LE CHAT
 // ----------------------------------------------------
 async function clearChat() {
-    if (!confirm("Supprimer tous les messages ?")) return;
+  if (!confirm("Supprimer tous les messages ?")) return;
 
-    const { data: messages } = await supabaseClient
-        .from("messages")
-        .select("image_url");
+  const { data: messages } = await supabaseClient
+    .from("messages")
+    .select("image_url");
 
-    for (let msg of messages) {
-        if (msg.image_url) {
-            const path = msg.image_url.split("/").pop();
-            await supabaseClient.storage
-                .from("chat-images")
-                .remove([path]);
-        }
+  for (let msg of messages) {
+    if (msg.image_url) {
+      const path = msg.image_url.split("/").pop();
+      await supabaseClient.storage.from("chat-images").remove([path]);
     }
+  }
 
-    await supabaseClient.from("messages").delete().neq("id", 0);
+  await supabaseClient.from("messages").delete().neq("id", 0);
 }
 
 // ----------------------------------------------------
@@ -148,13 +145,13 @@ const messageInput = document.getElementById("messageInput");
 messageInput.addEventListener("input", autoResizeTextarea);
 
 function autoResizeTextarea() {
-    messageInput.style.height = "auto";
-    messageInput.style.height = messageInput.scrollHeight + "px";
+  messageInput.style.height = "auto";
+  messageInput.style.height = messageInput.scrollHeight + "px";
 }
 
 // ----------------------------------------------------
 // APPAREIL PHOTO
 // ----------------------------------------------------
 document.getElementById("cameraButton").addEventListener("click", () => {
-    document.getElementById("imageInput").click();
+  document.getElementById("imageInput").click();
 });
