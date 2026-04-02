@@ -1,22 +1,20 @@
-// -------------------------
-// INITIALISATION FIREBASE
-// -------------------------
-const firebaseConfig = {
-apiKey:"AIzaSyCmw1nlfvNhzrH4_0f72lMQthgiToCLBzI",
-authDomain:"pqt2026.firebaseapp.com",
-databaseURL:"https://pqt2026-default-rtdb.firebaseio.com",
-projectId:"pqt2026",
-storageBucket:"pqt2026.firebasestorage.app"
-};
+/* -------------------------------------------------------------
+   CONFIG SUPABASE
+------------------------------------------------------------- */
+const SUPABASE_URL = "https://xdbagyfmswunrfzsyeec.supabase.co";
+const SUPABASE_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkYmFneWZtc3d1bnJmenN5ZWVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMjc0OTEsImV4cCI6MjA5MDcwMzQ5MX0.sz-N6BjpHgVXAhhTexowsY6og9VKdY61EOXafGUEi_0";
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-const storage = firebase.storage();
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Utilisateur unique
-const user = localStorage.getItem("chatUser") || "user" + Math.floor(Math.random() * 1000);
-localStorage.setItem("chatUser", user);
-
+/* -------------------------------------------------------------
+   UTILISATEUR LOCAL
+------------------------------------------------------------- */
+let user = localStorage.getItem("chatUser");
+if (!user) {
+  user = "user" + Math.floor(Math.random() * 1000);
+  localStorage.setItem("chatUser", user);
+}
 // -------------------------
 // LOGIN
 // -------------------------
