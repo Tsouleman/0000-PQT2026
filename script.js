@@ -3,7 +3,7 @@
    CONFIG SUPABASE
 ------------------------------------------------------------- */
 const SUPABASE_URL = "https://xdbagyfmswunrfzsyeec.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOi...EOXafGUEi_0"; // TA CLE RESTE OK
+const SUPABASE_KEY = "eyJhbGciOiJI...";  // ← garde ta clé
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 /* USER */
@@ -27,30 +27,38 @@ async function compressImage(file) {
   const img = await createImageBitmap(file);
   const canvas = document.createElement("canvas");
 
-  const MAX = 1200;
   let w = img.width;
   let h = img.height;
+  const MAX = 1200;
 
   if (w > MAX || h > MAX) {
-    if (w > h) { h = h * MAX / w; w = MAX; }
-    else { w = w * MAX / h; h = MAX; }
+    if (w > h) {
+      h = h * MAX / w;
+      w = MAX;
+    } else {
+      w = w * MAX / h;
+      h = MAX;
+    }
   }
 
-  canvas.width = w; canvas.height = h;
-  const ctx = canvas.getContext("2d");
-  ctx.drawImage(img, 0, 0, w, h);
+  canvas.width = w;
+  canvas.height = h;
+  canvas.getContext("2d").drawImage(img, 0, 0, w, h);
 
-  return new Promise(res => canvas.toBlob(res, "image/jpeg", 0.75));
+  return new Promise(resolve =>
+    canvas.toBlob(resolve, "image/jpeg", 0.75)
+  );
 }
 
-/* PREVIEW PHOTO */
+/* PREVIEW */
 let pendingFile = null;
 
-document.getElementById("imageInput").addEventListener("change", e => {
+imageInput.addEventListener("change", e => {
   const file = e.target.files[0];
   if (!file) return;
 
   pendingFile = file;
+
   const r = new FileReader();
   r.onload = () => {
     previewImg.src = r.result;
@@ -74,14 +82,15 @@ confirmPreview.onclick = async () => {
 cameraButton.onclick = () => imageInput.click();
 
 /* ENVOI TEXTE */
-document.getElementById("sendText").onclick = async () => {
+sendText.onclick = async () => {
   const text = messageInput.value.trim();
   if (!text) return;
+
   await sendMessage(text, null);
   messageInput.value = "";
 };
 
-/* ENVOI IMAGE */
+/* ENVOI PHOTO */
 async function sendImage(file) {
   const compressed = await compressImage(file);
   await sendMessage("", compressed);
@@ -94,8 +103,14 @@ async function sendMessage(text, blob) {
   if (blob) {
     const fileName = "photo_" + Date.now() + ".jpg";
     const path = "photos/" + fileName;
-    await supabaseClient.storage.from("chat-images").upload(path, blob);
-    imageUrl = supabaseClient.storage.from("chat-images").getPublicUrl(path).data.publicUrl;
+
+    await supabaseClient.storage
+      .from("chat-images")
+      .upload(path, blob);
+
+    imageUrl = supabaseClient.storage
+      .from("chat-images")
+      .getPublicUrl(path).data.publicUrl;
   }
 
   await supabaseClient.from("messages").insert({
@@ -109,20 +124,24 @@ async function sendMessage(text, blob) {
 
 /* REALTIME */
 function listenMessages() {
-  supabaseClient.channel("messages")
-    .on("postgres_changes",
+  supabaseClient
+    .channel("messages")
+    .on(
+      "postgres_changes",
       { event: "*", schema: "public", table: "messages" },
-      () => updateMessages())
+      () => updateMessages()
+    )
     .subscribe();
 
   updateMessages();
 }
 
-/* FORMATER HEURE */
+/* FORMAT HEURE */
 function formatTime(ts) {
   if (!ts) return "";
   const d = new Date(ts);
-  return d.getHours().toString().padStart(2, "0") + ":" +
+  return d.getHours().toString().padStart(2, "0") +
+         ":" +
          d.getMinutes().toString().padStart(2, "0");
 }
 
@@ -135,17 +154,20 @@ async function updateMessages() {
 
   chat.innerHTML = "";
 
-  messages.forEach(async msg => {
+  for (let msg of messages) {
     const div = document.createElement("div");
     div.className = "message " + (msg.sender === user ? "mine" : "other");
 
     let html = "";
 
     if (msg.text) html += `<span>${msg.text}</span>`;
-    if (msg.image_url) html += `<br>${msg.image_url}`;
+
+    if (msg.image_url)
+      html += `<br>${msg.image_url}`;
 
     let check = "✓";
-    if (msg.seen_by && msg.seen_by.length) check = "✓✓";
+    if (msg.seen_by && msg.seen_by.length)
+      check = "✓✓";
 
     html += `<div class="status">${check} ${formatTime(msg.timestamp)}</div>`;
 
@@ -155,10 +177,12 @@ async function updateMessages() {
     if (msg.sender !== user) {
       await supabaseClient
         .from("messages")
-        .update({ seen_by: [...msg.seen_by, { user, time: Date.now() }] })
+        .update({
+          seen_by: [...msg.seen_by, { user, time: Date.now() }]
+        })
         .eq("id", msg.id);
     }
-  });
+  }
 
   chat.scrollTop = chat.scrollHeight;
 }
@@ -166,6 +190,7 @@ async function updateMessages() {
 /* CLEAR CHAT */
 async function clearChat() {
   if (!confirm("Supprimer tous les messages ?")) return;
+
   await supabaseClient.from("messages").delete().neq("id", 0);
   updateMessages();
 }
