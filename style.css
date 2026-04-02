@@ -108,7 +108,7 @@ button.danger {
   margin: 10px 0;
 }
 
-#previewImg {
+.preview-img {
   max-width: 90%;
   border-radius: 12px;
   margin-bottom: 10px;
