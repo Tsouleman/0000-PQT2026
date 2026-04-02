@@ -3,7 +3,7 @@ html, body {
   padding: 0;
   height: 100%;
   font-family: sans-serif;
-  background: #7a7d7d;
+  background: #ece5dd;
 }
 
 #login, #chatApp {
@@ -33,12 +33,6 @@ html, body {
   display: none;
   flex-direction: column;
   height: 100vh;
-}
-
-#chatControls {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 5px;
 }
 
 #chat {
@@ -95,49 +89,31 @@ html, body {
   padding: 5px;
   position: sticky;
   bottom: 0;
-  background: #7a7d7d;
+  background: #ece5dd;
   align-items: flex-end;
 }
 
 #messageInput {
   flex: 1;
-  padding: 12px;
-  font-size: 16px;
-  border-radius: 20px;
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 18px;
   border: 1px solid #ccc;
   resize: none;
   overflow-y: hidden;
-  min-height: 48px;
-  max-height: 150px;
+  min-height: 36px;
+  max-height: 120px;
 }
 
-#cameraLabel {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  font-size: 20px;
-  background: #128c7e;
-  color: white;
-  border-radius: 50%;
-  cursor: pointer;
-  user-select: none;
-}
-
-#inputArea button {
-  padding: 0 12px;
-  width: 40px;
-  height: 40px;
-  font-size: 18px;
-  border-radius: 50%;
-  background: #128c7e;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+#imageInput {
+  width: 80px;
 }
 
 button {
+  padding: 8px 12px;
+  border-radius: 18px;
+  border: none;
   cursor: pointer;
+  background: #128c7e;
+  color: white;
 }
