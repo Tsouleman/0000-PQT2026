@@ -3,7 +3,7 @@ html, body {
   padding: 0;
   height: 100%;
   font-family: sans-serif;
-  background: #ece5dd;
+  background: #7a7d7d;
 }
 
 #login, #chatApp {
@@ -95,7 +95,7 @@ html, body {
   padding: 5px;
   position: sticky;
   bottom: 0;
-  background: #ece5dd;
+  background: #7a7d7d;
   align-items: flex-end;
 }
 
