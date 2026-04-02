@@ -4,53 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chat Supabase</title>
-
     <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-
-<div id="login">
-    <h2>Accès</h2>
-    <input type="password" id="password" placeholder="Mot de passe" />
-    <button onclick="login()">Entrer</button>
-</div>
-
+<div id="login"> <h2>Accès</h2>
+<input type="password" id="password" placeholder="Mot de passe" />
+<button onclick="login()">Entrer</button></div>
 <div id="chatApp" style="display:none;">
-
-    <div id="chatControls">
-        <button onclick="clearChat()" class="danger">Vider le chat</button>
-    </div>
-
-    <div id="chat"></div>
-
-    <!-- PREVIEW PHOTO -->
-    <div id="previewBox" class="preview-box" style="display:none;">
-        <img id="previewImg" />
-        <div class="preview-buttons">
-            <button id="cancelPreview" class="cancel">Annuler</button>
-            <button id="confirmPreview" class="send">Envoyer</button>
-        </div>
-    </div>
-
-    <div id="inputArea">
-        <textarea id="messageInput" placeholder="Écrire un message..." rows="1"></textarea>
-
-        <button id="cameraButton" type="button">📷</button>
-
-        <input 
-            type="file" 
-            id="imageInput" 
-            accept="image/*;capture=camera"
-            capture="environment"
-            style="display:none" />
-
-        <button id="sendText">➤</button>
-    </div>
-</div>
-
+<div id="chatControls"><button onclick="clearChat()" class="danger">Vider le chat</button></div>
+<div id="chat"></div>
+<div id="previewBox" class="preview-box" style="display:none;"><img id="previewImg" class="preview-img" /><div class="preview-buttons"><button id="cancelPreview" class="cancel">Annuler</button><button id="confirmPreview" class="send">Envoyer</button></div></div>
+<div id="inputArea">
+<textarea id="messageInput" placeholder="Écrire un message..." rows="1"></textarea>
+<button id="cameraButton" type="button">📷</button>
+<input type="file" id="imageInput" accept="image/*;capture=camera" capture="environment" style="display:none" />
+<button id="sendText">➤</button></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
-
-</body>
-</html>
+</body></html>
