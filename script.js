@@ -171,6 +171,13 @@ messageInput.addEventListener("keydown", function (event) {
   }
 });
 
+
+// ✅ AJOUTE ICI le déclencheur de l'appareil photo
+document.getElementById("cameraButton").addEventListener("click", () => {
+    document.getElementById("imageInput").click();
+});
+
+
 // -------------------------
 // AUTO RESIZE TEXTAREA
 // -------------------------
