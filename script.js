@@ -1,28 +1,37 @@
-
 /* -------------------------------------------------------------
    CONFIG SUPABASE
 ------------------------------------------------------------- */
 const SUPABASE_URL = "https://xdbagyfmswunrfzsyeec.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJI...";  // ← garde ta clé
+const SUPABASE_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkYmFneWZtc3d1bnJmenN5ZWVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMjc0OTEsImV4cCI6MjA5MDcwMzQ5MX0.sz-N6BjpHgVXAhhTexowsY6og9VKdY61EOXafGUEi_0";
+
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-/* USER */
+/* -------------------------------------------------------------
+   UTILISATEUR LOCAL
+------------------------------------------------------------- */
 let user = localStorage.getItem("chatUser");
 if (!user) {
   user = "user" + Math.floor(Math.random() * 1000);
   localStorage.setItem("chatUser", user);
 }
 
-/* LOGIN */
+/* -------------------------------------------------------------
+   LOGIN
+------------------------------------------------------------- */
 function login() {
   if (document.getElementById("password").value === "1234") {
     document.getElementById("login").style.display = "none";
     document.getElementById("chatApp").style.display = "block";
     listenMessages();
-  } else alert("Mot de passe incorrect");
+  } else {
+    alert("Mot de passe incorrect");
+  }
 }
 
-/* COMPRESSION IMAGE */
+/* -------------------------------------------------------------
+   COMPRESSION IMAGE
+------------------------------------------------------------- */
 async function compressImage(file) {
   const img = await createImageBitmap(file);
   const canvas = document.createElement("canvas");
@@ -50,7 +59,9 @@ async function compressImage(file) {
   );
 }
 
-/* PREVIEW */
+/* -------------------------------------------------------------
+   PREVIEW PHOTO
+------------------------------------------------------------- */
 let pendingFile = null;
 
 imageInput.addEventListener("change", e => {
@@ -59,12 +70,12 @@ imageInput.addEventListener("change", e => {
 
   pendingFile = file;
 
-  const r = new FileReader();
-  r.onload = () => {
-    previewImg.src = r.result;
+  const reader = new FileReader();
+  reader.onload = () => {
+    previewImg.src = reader.result;
     previewBox.style.display = "block";
   };
-  r.readAsDataURL(file);
+  reader.readAsDataURL(file);
 });
 
 cancelPreview.onclick = () => {
@@ -78,10 +89,14 @@ confirmPreview.onclick = async () => {
   previewBox.style.display = "none";
 };
 
-/* CAMERA */
+/* -------------------------------------------------------------
+   CAMERA
+------------------------------------------------------------- */
 cameraButton.onclick = () => imageInput.click();
 
-/* ENVOI TEXTE */
+/* -------------------------------------------------------------
+   ENVOI TEXTE
+------------------------------------------------------------- */
 sendText.onclick = async () => {
   const text = messageInput.value.trim();
   if (!text) return;
@@ -90,13 +105,17 @@ sendText.onclick = async () => {
   messageInput.value = "";
 };
 
-/* ENVOI PHOTO */
+/* -------------------------------------------------------------
+   ENVOI PHOTO
+------------------------------------------------------------- */
 async function sendImage(file) {
   const compressed = await compressImage(file);
   await sendMessage("", compressed);
 }
 
-/* ENVOI MESSAGE */
+/* -------------------------------------------------------------
+   ENVOI MESSAGE (TEXTE + PHOTO)
+------------------------------------------------------------- */
 async function sendMessage(text, blob) {
   let imageUrl = null;
 
@@ -122,7 +141,9 @@ async function sendMessage(text, blob) {
   });
 }
 
-/* REALTIME */
+/* -------------------------------------------------------------
+   TEMPS RÉEL
+------------------------------------------------------------- */
 function listenMessages() {
   supabaseClient
     .channel("messages")
@@ -136,16 +157,22 @@ function listenMessages() {
   updateMessages();
 }
 
-/* FORMAT HEURE */
+/* -------------------------------------------------------------
+   FORMAT HEURE
+------------------------------------------------------------- */
 function formatTime(ts) {
   if (!ts) return "";
   const d = new Date(ts);
-  return d.getHours().toString().padStart(2, "0") +
-         ":" +
-         d.getMinutes().toString().padStart(2, "0");
+  return (
+    d.getHours().toString().padStart(2, "0") +
+    ":" +
+    d.getMinutes().toString().padStart(2, "0")
+  );
 }
 
-/* AFFICHAGE */
+/* -------------------------------------------------------------
+   AFFICHAGE MESSAGES (TEXTE + PHOTO + ✓✓)
+------------------------------------------------------------- */
 async function updateMessages() {
   const { data: messages } = await supabaseClient
     .from("messages")
@@ -156,11 +183,13 @@ async function updateMessages() {
 
   for (let msg of messages) {
     const div = document.createElement("div");
-    div.className = "message " + (msg.sender === user ? "mine" : "other");
+    div.className =
+      "message " + (msg.sender === user ? "mine" : "other");
 
     let html = "";
 
-    if (msg.text) html += `<span>${msg.text}</span>`;
+    if (msg.text)
+      html += `<span>${msg.text}</span>`;
 
     if (msg.image_url)
       html += `<br>${msg.image_url}`;
@@ -169,7 +198,9 @@ async function updateMessages() {
     if (msg.seen_by && msg.seen_by.length)
       check = "✓✓";
 
-    html += `<div class="status">${check} ${formatTime(msg.timestamp)}</div>`;
+    html += `<div class="status">${check} ${formatTime(
+      msg.timestamp
+    )}</div>`;
 
     div.innerHTML = html;
     chat.appendChild(div);
@@ -187,9 +218,12 @@ async function updateMessages() {
   chat.scrollTop = chat.scrollHeight;
 }
 
-/* CLEAR CHAT */
+/* -------------------------------------------------------------
+   CLEAR CHAT
+------------------------------------------------------------- */
 async function clearChat() {
-  if (!confirm("Supprimer tous les messages ?")) return;
+  if (!confirm("Supprimer tous les messages ?"))
+    return;
 
   await supabaseClient.from("messages").delete().neq("id", 0);
   updateMessages();
