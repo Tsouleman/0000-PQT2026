@@ -6,18 +6,14 @@ const SUPABASE_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkYmFneWZtc3d1bnJmenN5ZWVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMjc0OTEsImV4cCI6MjA5MDcwMzQ5MX0.sz-N6BjpHgVXAhhTexowsY6og9VKdY61EOXafGUEi_0";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-/* -------------------------------------------------------------
-   UTILISATEUR LOCAL
-------------------------------------------------------------- */
+/* UTILISATEUR LOCAL */
 let user = localStorage.getItem("chatUser");
 if (!user) {
   user = "user" + Math.floor(Math.random() * 1000);
   localStorage.setItem("chatUser", user);
 }
 
-/* -------------------------------------------------------------
-   LOGIN
-------------------------------------------------------------- */
+/* LOGIN */
 function login() {
   const pass = document.getElementById("password").value;
   if (pass === "1234") {
@@ -29,9 +25,7 @@ function login() {
   }
 }
 
-/* -------------------------------------------------------------
-   COMPRESSION IMAGE
-------------------------------------------------------------- */
+/* COMPRESSION IMAGE */
 async function compressImage(file) {
   const img = await createImageBitmap(file);
   const canvas = document.createElement("canvas");
@@ -60,9 +54,7 @@ async function compressImage(file) {
   );
 }
 
-/* -------------------------------------------------------------
-   PREVIEW PHOTO
-------------------------------------------------------------- */
+/* PREVIEW */
 let pendingFile = null;
 
 document.getElementById("imageInput").addEventListener("change", async () => {
@@ -84,23 +76,18 @@ document.getElementById("cancelPreview").addEventListener("click", () => {
   document.getElementById("previewBox").style.display = "none";
 });
 
-/* CONFIRM ENVOI */
 document.getElementById("confirmPreview").addEventListener("click", async () => {
   if (pendingFile) await sendImage(pendingFile);
   pendingFile = null;
   document.getElementById("previewBox").style.display = "none";
 });
 
-/* -------------------------------------------------------------
-   CAMERA
-------------------------------------------------------------- */
+/* CAMERA */
 document.getElementById("cameraButton").addEventListener("click", () => {
   document.getElementById("imageInput").click();
 });
 
-/* -------------------------------------------------------------
-   ENVOI TEXTE SEUL
-------------------------------------------------------------- */
+/* ENVOI TEXTE */
 async function sendTextOnly() {
   const text = document.getElementById("messageInput").value.trim();
   if (!text) return;
@@ -109,17 +96,13 @@ async function sendTextOnly() {
   document.getElementById("messageInput").value = "";
 }
 
-/* -------------------------------------------------------------
-   ENVOI PHOTO SEULE
-------------------------------------------------------------- */
+/* ENVOI IMAGE */
 async function sendImage(file) {
   const compressed = await compressImage(file);
   await sendMessage("", compressed);
 }
 
-/* -------------------------------------------------------------
-   ENVOI MESSAGE
-------------------------------------------------------------- */
+/* ENVOI MESSAGE */
 async function sendMessage(text, imageBlob) {
   let imageUrl = null;
 
@@ -127,7 +110,7 @@ async function sendMessage(text, imageBlob) {
     const fileName = "photo_" + Date.now() + ".jpg";
     const path = "photos/" + fileName;
 
-    const up = await supabaseClient.storage
+    await supabaseClient.storage
       .from("chat-images")
       .upload(path, imageBlob);
 
@@ -145,9 +128,7 @@ async function sendMessage(text, imageBlob) {
   });
 }
 
-/* -------------------------------------------------------------
-   TEMPS RÉEL + AFFICHAGE
-------------------------------------------------------------- */
+/* REALTIME */
 function listenMessages() {
   supabaseClient
     .channel("messages")
@@ -159,12 +140,16 @@ function listenMessages() {
   updateMessages();
 }
 
+/* FORMATER L'HEURE */
 function formatTime(ts) {
   if (!ts) return "";
   const d = new Date(ts);
-  return d.getHours().toString().padStart(2, "0") + ":" + d.getMinutes().toString().padStart(2, "0");
+  return d.getHours().toString().padStart(2, "0") +
+         ":" +
+         d.getMinutes().toString().padStart(2, "0");
 }
 
+/* AFFICHAGE MESSAGES */
 async function updateMessages() {
   const chat = document.getElementById("chat");
 
@@ -200,16 +185,17 @@ async function updateMessages() {
 
     if (msg.sender !== user) {
       const seenEntry = { user, time: Date.now() };
-      supabaseClient.from("messages").update({ seen_by: [...msg.seen_by, seenEntry] }).eq("id", msg.id);
+      await supabaseClient
+        .from("messages")
+        .update({ seen_by: [...msg.seen_by, seenEntry] })
+        .eq("id", msg.id);
     }
   }
 
   chat.scrollTop = chat.scrollHeight;
 }
 
-/* -------------------------------------------------------------
-   CLEAR CHAT
-------------------------------------------------------------- */
+/* CLEAR */
 async function clearChat() {
   if (!confirm("Supprimer tous les messages ?")) return;
 
