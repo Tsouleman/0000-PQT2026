@@ -2,11 +2,14 @@
 // CONFIG SUPABASE
 // ----------------------------------------------------
 const SUPABASE_URL = "https://xdbagyfmswunrfzsyeec.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkYmFneWZtc3d1bnJmenN5ZWVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMjc0OTEsImV4cCI6MjA5MDcwMzQ5MX0.sz-N6BjpHgVXAhhTexowsY6og9VKdY61EOXafGUEi_0";
+const SUPABASE_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkYmFneWZtc3d1bnJmenN5ZWVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMjc0OTEsImV4cCI6MjA5MDcwMzQ5MX0.sz-N6BjpHgVXAhhTexowsY6og9VKdY61EOXafGUEi_0";
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ✅ Identité pseudo-user (corrigé)
+// ----------------------------------------------------
+// UTILISATEUR LOCAL (corrigé)
+// ----------------------------------------------------
 let user = localStorage.getItem("chatUser");
 if (!user) {
   user = "user" + Math.floor(Math.random() * 1000);
@@ -39,8 +42,13 @@ async function sendMessage() {
 
   let imageUrl = null;
 
+  // UPLOAD IMAGE
   if (file) {
-    const fileName = "photo_" + Date.now() + "_" + file.name.replace(/\s/g, "_");
+    const fileName =
+      "photo_" +
+      Date.now() +
+      "_" +
+      file.name.replace(/\s/g, "_");
 
     const { data, error } = await supabaseClient.storage
       .from("chat-images")
@@ -56,7 +64,8 @@ async function sendMessage() {
       .getPublicUrl(fileName).data.publicUrl;
   }
 
-  await supabaseClient
+  // INSERT MESSAGE
+  const { error: insertError } = await supabaseClient
     .from("messages")
     .insert({
       sender: user,
@@ -65,21 +74,31 @@ async function sendMessage() {
       seen_by: []
     });
 
+  if (insertError) {
+    console.error("Erreur insert Supabase :", insertError);
+    alert("Erreur insertion : " + insertError.message);
+  }
+
   document.getElementById("messageInput").value = "";
   fileInput.value = "";
   autoResizeTextarea();
 }
 
 // ----------------------------------------------------
-// TEMPS RÉEL
+// ECOUTE TEMPS RÉEL (VERSION SUPABASE 2026 ✅)
 // ----------------------------------------------------
 function listenMessages() {
   supabaseClient
     .channel("messages_channel")
     .on(
       "postgres_changes",
-      { event: "*", schema: "public", table: "messages" },
-      payload => {
+      {
+        event: "INSERT",
+        schema: "public",
+        table: "messages"
+      },
+      (payload) => {
+        console.log("✅ Realtime reçu :", payload);
         updateMessages();
       }
     )
@@ -88,6 +107,9 @@ function listenMessages() {
   updateMessages();
 }
 
+// ----------------------------------------------------
+// MISE À JOUR DU CHAT
+// ----------------------------------------------------
 async function updateMessages() {
   const chat = document.getElementById("chat");
 
@@ -103,13 +125,13 @@ async function updateMessages() {
 
   chat.innerHTML = "";
 
-  messages.forEach(msg => {
+  messages.forEach((msg) => {
     const div = document.createElement("div");
     div.className = "message " + (msg.sender === user ? "mine" : "other");
 
     let html = "";
     if (msg.text) html += `<span>${msg.text}</span>`;
-    if (msg.image_url) html += `<br><img src="${msg.image_url}">`;
+    if (msg.image_url) html += `<br><img src="${msg.image_url}" />`;
 
     div.innerHTML = html;
     chat.appendChild(div);
@@ -119,7 +141,7 @@ async function updateMessages() {
 }
 
 // ----------------------------------------------------
-// VIDER LE CHAT
+// SUPPRESSION DU CHAT + IMAGES
 // ----------------------------------------------------
 async function clearChat() {
   if (!confirm("Supprimer tous les messages ?")) return;
@@ -146,12 +168,15 @@ messageInput.addEventListener("input", autoResizeTextarea);
 
 function autoResizeTextarea() {
   messageInput.style.height = "auto";
-  messageInput.style.height = messageInput.scrollHeight + "px";
+  messageInput.style.height =
+    messageInput.scrollHeight + "px";
 }
 
 // ----------------------------------------------------
-// APPAREIL PHOTO
+// OUVERTURE APPAREIL PHOTO
 // ----------------------------------------------------
-document.getElementById("cameraButton").addEventListener("click", () => {
-  document.getElementById("imageInput").click();
-});
+document
+  .getElementById("cameraButton")
+  .addEventListener("click", () => {
+    document.getElementById("imageInput").click();
+  });
