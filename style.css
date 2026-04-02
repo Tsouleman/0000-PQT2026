@@ -1,4 +1,3 @@
-/* FOND GRIS GLOBAL */
 body {
   margin: 0;
   background: #7a7d7d;
@@ -6,7 +5,7 @@ body {
   color: #111;
 }
 
-/* CONTAINERS */
+/* Login + chat layout */
 #login, #chatApp {
   width: 100%;
   max-width: 500px;
@@ -22,22 +21,35 @@ body {
   height: 100vh;
 }
 
-/* CHAT */
-#chat {
-  flex: 1;
-  height: calc(100vh - 160px);
-  overflow-y: auto;
-  padding: 10px;
-  background: #ececec;
-  border-radius: 10px;
+#login input, #login button {
+  padding: 12px;
+  margin: 5px 0;
+  font-size: 16px;
 }
 
-/* MESSAGES */
+/* Chat area */
+#chatControls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+#chat {
+  background: #ececec;
+  border-radius: 10px;
+  height: calc(100vh - 180px);
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Messages */
 .message {
   padding: 10px 14px;
   border-radius: 18px;
   max-width: 80%;
-  margin-bottom: 8px;
   word-break: break-word;
 }
 
@@ -51,14 +63,14 @@ body {
   align-self: flex-start;
 }
 
-/* IMAGES */
+/* Images */
 .message img {
   max-width: 230px;
   border-radius: 12px;
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
-/* DOUBLE CHECK / HEURE */
+/* Status  ✓✓ + heure */
 .status {
   font-size: 12px;
   color: #555;
@@ -66,11 +78,11 @@ body {
   text-align: right;
 }
 
-/* INPUT AREA */
+/* Input area */
 #inputArea {
   display: flex;
-  gap: 6px;
-  padding: 10px 0;
+  gap: 8px;
+  padding-top: 10px;
 }
 
 #messageInput {
@@ -81,22 +93,22 @@ body {
   font-size: 16px;
 }
 
-/* BOUTONS */
+/* Buttons */
 #inputArea button,
 #chatControls button {
-  padding: 10px 14px;
-  border: none;
-  border-radius: 8px;
   background: #128c7e;
+  border: none;
   color: white;
+  padding: 12px 14px;
   font-size: 16px;
+  border-radius: 8px;
 }
 
 button.danger {
   background: red !important;
 }
 
-/* PREVIEW */
+/* Preview photo */
 .preview-box {
   text-align: center;
   margin: 10px 0;
@@ -112,4 +124,9 @@ button.danger {
   display: flex;
   justify-content: center;
   gap: 10px;
+}
+
+.preview-buttons button {
+  padding: 10px 18px;
+  border-radius: 8px;
 }
