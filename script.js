@@ -46,7 +46,8 @@ async function sendMessage() {
   let imageUrl = null;
 
   if (file) {
-    const fileName = "photo_" + Date.now() + "_" + file.name.replace(/\s/g, "_");
+    const fileName =
+      "photo_" + Date.now() + "_" + file.name.replace(/\s/g, "_");
     const path = "photos/" + fileName;
 
     console.log("📤 Upload →", path);
@@ -83,7 +84,7 @@ async function sendMessage() {
 }
 
 // ----------------------------------------------------
-// TEMPS RÉEL (Supabase 2026)
+// TEMPS RÉEL
 // ----------------------------------------------------
 function listenMessages() {
   supabaseClient
@@ -99,7 +100,7 @@ function listenMessages() {
 }
 
 // ----------------------------------------------------
-// AFFICHAGE DES MESSAGES (AVEC IMAGES)
+// AFFICHAGE DES MESSAGES + IMAGES
 // ----------------------------------------------------
 async function updateMessages() {
   const chat = document.getElementById("chat");
@@ -122,9 +123,10 @@ async function updateMessages() {
 
     let html = "";
 
+    // ✅ TEXTE
     if (msg.text) html += `<span>${msg.text}</span>`;
 
-    // ✅ AFFICHE L’IMAGE
+    // ✅ AFFICHAGE IMAGE (en <img>)
     if (msg.image_url) {
       html += `<br>${msg.image_url}`;
     }
