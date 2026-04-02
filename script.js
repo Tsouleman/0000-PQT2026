@@ -1,229 +1,182 @@
-/* -------------------------------------------------------------
-   CONFIG SUPABASE
-------------------------------------------------------------- */
-const SUPABASE_URL = "https://xdbagyfmswunrfzsyeec.supabase.co";
-const SUPABASE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkYmFneWZtc3d1bnJmenN5ZWVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMjc0OTEsImV4cCI6MjA5MDcwMzQ5MX0.sz-N6BjpHgVXAhhTexowsY6og9VKdY61EOXafGUEi_0";
+// -------------------------
+// INITIALISATION FIREBASE
+// -------------------------
+const firebaseConfig = {
+apiKey:"AIzaSyCmw1nlfvNhzrH4_0f72lMQthgiToCLBzI",
+authDomain:"pqt2026.firebaseapp.com",
+databaseURL:"https://pqt2026-default-rtdb.firebaseio.com",
+projectId:"pqt2026",
+storageBucket:"pqt2026.firebasestorage.app"
+};
 
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const storage = firebase.storage();
 
-/* -------------------------------------------------------------
-   UTILISATEUR LOCAL
-------------------------------------------------------------- */
-let user = localStorage.getItem("chatUser");
-if (!user) {
-  user = "user" + Math.floor(Math.random() * 1000);
-  localStorage.setItem("chatUser", user);
-}
+// Utilisateur unique
+const user = localStorage.getItem("chatUser") || "user" + Math.floor(Math.random() * 1000);
+localStorage.setItem("chatUser", user);
 
-/* -------------------------------------------------------------
-   LOGIN
-------------------------------------------------------------- */
+// -------------------------
+// LOGIN
+// -------------------------
 function login() {
-  if (document.getElementById("password").value === "1234") {
+  const pass = document.getElementById("password").value;
+  if (pass === "1234") {
     document.getElementById("login").style.display = "none";
-    document.getElementById("chatApp").style.display = "block";
-    listenMessages();
+    document.getElementById("chatApp").style.display = "flex";
+    startChatListener();
   } else {
     alert("Mot de passe incorrect");
   }
 }
 
-/* -------------------------------------------------------------
-   COMPRESSION IMAGE
-------------------------------------------------------------- */
-async function compressImage(file) {
-  const img = await createImageBitmap(file);
-  const canvas = document.createElement("canvas");
+// -------------------------
+// ENVOI MESSAGE
+// -------------------------
+function sendMessage() {
+  const text = document.getElementById("messageInput").value;
+  const fileInput = document.getElementById("imageInput");
+  const file = fileInput.files[0];
 
-  let w = img.width;
-  let h = img.height;
-  const MAX = 1200;
+  if (!text && !file) return;
 
-  if (w > MAX || h > MAX) {
-    if (w > h) {
-      h = (h * MAX) / w;
-      w = MAX;
-    } else {
-      w = (w * MAX) / h;
-      h = MAX;
+  if (file) {
+    const fileName = Date.now() + "_" + file.name.replace(/\s/g, "_");
+    const storageRef = storage.ref("images/" + fileName);
+
+    const uploadTask = storageRef.put(file);
+
+    uploadTask.on('state_changed',
+      null,
+      (error) => { alert("Erreur lors de l'envoi de l'image: " + error.message); },
+      () => {
+        uploadTask.snapshot.ref.getDownloadURL().then((url) => {
+          db.ref("messages").push({
+            text: text || "",
+            image: url,
+            sender: user,
+            timestamp: Date.now(),
+            seenBy: []
+          });
+          document.getElementById("messageInput").value = "";
+          fileInput.value = "";
+          autoResizeTextarea();
+        });
+      }
+    );
+  } else {
+    db.ref("messages").push({
+      text: text,
+      sender: user,
+      timestamp: Date.now(),
+      seenBy: []
+    });
+    document.getElementById("messageInput").value = "";
+    autoResizeTextarea();
+  }
+}
+
+// -------------------------
+// FORMAT HEURE
+// -------------------------
+function formatTime(ts) {
+  const d = new Date(ts);
+  let h = d.getHours();
+  let m = d.getMinutes();
+  if (h < 10) h = "0" + h;
+  if (m < 10) m = "0" + m;
+  return h + ":" + m;
+}
+
+// -------------------------
+// ÉCOUTE CHAT
+// -------------------------
+function startChatListener() {
+  const chat = document.getElementById("chat");
+
+  db.ref("messages").on("value", snapshot => {
+    chat.innerHTML = "";
+    const data = snapshot.val();
+    if (!data) return;
+
+    for (let id in data) {
+      const msg = data[id];
+      const div = document.createElement("div");
+      div.className = "message " + (msg.sender === user ? "mine" : "other");
+
+      let status = "✓";
+      let readTime = "";
+      if (msg.seenBy && msg.seenBy.length > 0) {
+        status = "✓✓";
+        if (msg.sender === user) {
+          const others = msg.seenBy.filter(e => e.user !== user && e.time);
+          if (others.length > 0) {
+            const lastReadTime = Math.max(...others.map(e => e.time));
+            readTime = ` (vu ${formatTime(lastReadTime)})`;
+          }
+        }
+      }
+
+      let actions = "";
+      if (msg.sender === user) {
+        actions = `
+          <span class="actions" onclick="editMessage('${id}','${msg.text}')">modifier</span>
+          <span class="actions" onclick="deleteMessage('${id}')">supprimer</span>
+        `;
+      }
+
+      div.innerHTML = `
+        ${msg.text || ""}
+        ${msg.image ? "<img src='" + msg.image + "'>" : ""}
+        <div class="status">${status} ${formatTime(msg.timestamp)}${readTime}</div>
+        ${actions}
+      `;
+      chat.appendChild(div);
+
+      if (msg.sender !== user) {
+        if (!msg.seenBy) msg.seenBy = [];
+        const alreadySeen = msg.seenBy.find(e => e.user === user);
+        if (!alreadySeen) {
+          msg.seenBy.push({ user: user, time: Date.now() });
+          db.ref("messages/" + id).update({ seenBy: msg.seenBy });
+        }
+      }
     }
-  }
 
-  canvas.width = w;
-  canvas.height = h;
-  canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-
-  return new Promise(resolve =>
-    canvas.toBlob(resolve, "image/jpeg", 0.75)
-  );
-}
-
-/* -------------------------------------------------------------
-   PREVIEW PHOTO
-------------------------------------------------------------- */
-let pendingFile = null;
-
-document.getElementById("imageInput").addEventListener("change", e => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  pendingFile = file;
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    previewImg.src = reader.result;
-    previewBox.style.display = "block";
-  };
-  reader.readAsDataURL(file);
-});
-
-cancelPreview.onclick = () => {
-  pendingFile = null;
-  previewBox.style.display = "none";
-};
-
-confirmPreview.onclick = async () => {
-  if (pendingFile) await sendImage(pendingFile);
-  pendingFile = null;
-  previewBox.style.display = "none";
-};
-
-/* -------------------------------------------------------------
-   CAMERA
-------------------------------------------------------------- */
-cameraButton.onclick = () => imageInput.click();
-
-/* -------------------------------------------------------------
-   ENVOI TEXTE
-------------------------------------------------------------- */
-sendText.onclick = async () => {
-  const text = messageInput.value.trim();
-  if (!text) return;
-
-  await sendMessage(text, null);
-  messageInput.value = "";
-};
-
-/* -------------------------------------------------------------
-   ENVOI PHOTO
-------------------------------------------------------------- */
-async function sendImage(file) {
-  const compressed = await compressImage(file);
-  await sendMessage("", compressed);
-}
-
-/* -------------------------------------------------------------
-   ENVOI MESSAGE (TEXTE + IMAGE)
-------------------------------------------------------------- */
-async function sendMessage(text, blob) {
-  let imageUrl = null;
-
-  if (blob) {
-    const fileName = "photo_" + Date.now() + ".jpg";
-    const path = "photos/" + fileName;
-
-    await supabaseClient.storage
-      .from("chat-images")
-      .upload(path, blob);
-
-    imageUrl = supabaseClient.storage
-      .from("chat-images")
-      .getPublicUrl(path).data.publicUrl;
-  }
-
-  await supabaseClient.from("messages").insert({
-    sender: user,
-    text,
-    image_url: imageUrl,
-    timestamp: Date.now(),
-    seen_by: []
+    chat.scrollTop = chat.scrollHeight;
   });
 }
 
-/* -------------------------------------------------------------
-   REALTIME
-------------------------------------------------------------- */
-function listenMessages() {
-  supabaseClient
-    .channel("messages")
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "messages" },
-      () => updateMessages()
-    )
-    .subscribe();
-
-  updateMessages();
+// -------------------------
+// SUPPRIMER / MODIFIER / VIDER CHAT
+// -------------------------
+function deleteMessage(id) { db.ref("messages/" + id).remove(); }
+function editMessage(id, text) {
+  const newText = prompt("Modifier message", text);
+  if (newText) db.ref("messages/" + id).update({ text: newText });
+}
+function clearChat() {
+  if (confirm("Voulez-vous vraiment supprimer tous les messages ?")) db.ref("messages").remove();
 }
 
-/* -------------------------------------------------------------
-   FORMAT HEURE
-------------------------------------------------------------- */
-function formatTime(ts) {
-  if (!ts) return "";
-  const d = new Date(ts);
-  return (
-    d.getHours().toString().padStart(2, "0") +
-    ":" +
-    d.getMinutes().toString().padStart(2, "0")
-  );
-}
-
-/* -------------------------------------------------------------
-   AFFICHAGE DES MESSAGES
-------------------------------------------------------------- */
-async function updateMessages() {
-  const { data: messages } = await supabaseClient
-    .from("messages")
-    .select("*")
-    .order("id");
-
-  chat.innerHTML = "";
-
-  for (let msg of messages) {
-    const div = document.createElement("div");
-    div.className =
-      "message " + (msg.sender === user ? "mine" : "other");
-
-    let html = "";
-
-    if (msg.text) html += `<span>${msg.text}</span>`;
-
-    if (msg.image_url)
-      html += `<br>${msg.image_url}`;
-
-    let check = "✓";
-    if (msg.seen_by && msg.seen_by.length)
-      check = "✓✓";
-
-    html += `<div class="status">${check} ${formatTime(
-      msg.timestamp
-    )}</div>`;
-
-    div.innerHTML = html;
-    chat.appendChild(div);
-
-    if (msg.sender !== user) {
-      await supabaseClient
-        .from("messages")
-        .update({
-          seen_by: [...msg.seen_by, { user, time: Date.now() }]
-        })
-        .eq("id", msg.id);
-    }
+// -------------------------
+// ENVOI AVEC ENTER
+// -------------------------
+const messageInput = document.getElementById("messageInput");
+messageInput.addEventListener("keydown", function (event) {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    sendMessage();
   }
+});
 
-  chat.scrollTop = chat.scrollHeight;
+// -------------------------
+// AUTO RESIZE TEXTAREA
+// -------------------------
+messageInput.addEventListener('input', autoResizeTextarea);
+function autoResizeTextarea() {
+  messageInput.style.height = 'auto';
+  messageInput.style.height = messageInput.scrollHeight + 'px';
 }
 
-/* -------------------------------------------------------------
-   CLEAR CHAT
-------------------------------------------------------------- */
-async function clearChat() {
-  if (!confirm("Supprimer tous les messages ?"))
-    return;
-
-  await supabaseClient.from("messages").delete().neq("id", 0);
-  updateMessages();
-}
