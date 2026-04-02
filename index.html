@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -10,14 +11,12 @@
 
 <body>
 
-<!-- LOGIN -->
 <div id="login">
     <h2>Accès</h2>
     <input type="password" id="password" placeholder="Mot de passe" />
     <button onclick="login()">Entrer</button>
 </div>
 
-<!-- CHAT -->
 <div id="chatApp" style="display:none;">
 
     <div id="chatControls">
@@ -26,7 +25,7 @@
 
     <div id="chat"></div>
 
-    <!-- Aperçu photo -->
+    <!-- PREVIEW PHOTO -->
     <div id="previewBox" class="preview-box" style="display:none;">
         <img id="previewImg" />
         <div class="preview-buttons">
@@ -47,14 +46,11 @@
             capture="environment"
             style="display:none" />
 
-        <button onclick="sendTextOnly()">➤</button>
+        <button id="sendText">➤</button>
     </div>
 </div>
 
-<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- TON SCRIPT -->
 <script src="script.js"></script>
 
 </body>
