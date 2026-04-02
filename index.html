@@ -4,14 +4,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>0000</title>
+    <title>Chat Supabase</title>
 
-    <!-- Style -->
-    <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-
-    <!-- LOGIN -->
+    <link rel="stylesheet" href=" <!-- LOGIN -->
     <div id="login">
         <h2>Accès</h2>
         <input type="password" id="password" placeholder="Mot de passe" />
@@ -19,7 +14,7 @@
     </div>
 
     <!-- CHAT -->
-    <div id="chatApp">
+    <div id="chatApp" style="display:none;">
         <div id="chatControls">
             <button onclick="clearChat()" class="danger">Vider le chat</button>
         </div>
@@ -29,21 +24,18 @@
         <div id="inputArea">
             <textarea id="messageInput" placeholder="Écrire un message..." rows="1"></textarea>
 
-            <!-- Bouton appareil photo -->
             <button id="cameraButton" type="button">📷</button>
             <input type="file" id="imageInput" accept="image/*" capture="environment" style="display:none">
 
-            <!-- Bouton envoyer -->
             <button onclick="sendMessage()">➤</button>
         </div>
     </div>
 
-    <!-- ✅ CHARGER SUPABASE JS EN PREMIER -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- ✅ Charger la librairie Supabase -->
+    https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2</script>
 
-    <!-- ✅ PUIS TON SCRIPT QUI UTILISE SUPABASE -->
+    <!-- ✅ Charger TON script -->
     <script src="script.js"></script>
 
 </body>
 </html>
-
