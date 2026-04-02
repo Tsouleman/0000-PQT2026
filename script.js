@@ -1,3 +1,4 @@
+
 // ----------------------------------------------------
 // CONFIG SUPABASE
 // ----------------------------------------------------
@@ -31,7 +32,7 @@ function login() {
 }
 
 // ----------------------------------------------------
-// ENVOI MESSAGE + PHOTO (iOS + Android OK)
+// ENVOI MESSAGE + PHOTO
 // ----------------------------------------------------
 async function sendMessage() {
   const text = document.getElementById("messageInput").value.trim();
@@ -42,11 +43,9 @@ async function sendMessage() {
 
   let imageUrl = null;
 
-  // ✅ UPLOAD IMAGE (avec dossier obligatoire "photos/")
+  // ✅ Upload image dans un dossier "photos/"
   if (file) {
-    const fileName =
-      "photo_" + Date.now() + "_" + file.name.replace(/\s/g, "_");
-
+    const fileName = "photo_" + Date.now() + "_" + file.name.replace(/\s/g, "_");
     const path = "photos/" + fileName;
 
     console.log("📤 Upload →", path, file);
@@ -63,7 +62,6 @@ async function sendMessage() {
       return;
     }
 
-    // ✅ URL publique
     imageUrl = supabaseClient.storage
       .from("chat-images")
       .getPublicUrl(path).data.publicUrl;
@@ -71,7 +69,7 @@ async function sendMessage() {
     console.log("✅ URL publique :", imageUrl);
   }
 
-  // ✅ INSERT MESSAGE
+  // ✅ Insert message
   const { error: insertError } = await supabaseClient
     .from("messages")
     .insert({
@@ -92,3 +90,94 @@ async function sendMessage() {
 }
 
 // ----------------------------------------------------
+// TEMPS RÉEL
+// ----------------------------------------------------
+function listenMessages() {
+  supabaseClient
+    .channel("messages_channel")
+    .on(
+      "postgres_changes",
+      {
+        event: "INSERT",
+        schema: "public",
+        table: "messages"
+      },
+      () => updateMessages()
+    )
+    .subscribe();
+
+  updateMessages();
+}
+
+// ----------------------------------------------------
+// AFFICHAGE DES MESSAGES
+// ----------------------------------------------------
+async function updateMessages() {
+  const chat = document.getElementById("chat");
+
+  const { data: messages, error } = await supabaseClient
+    .from("messages")
+    .select("*")
+    .order("id", { ascending: true });
+
+  if (error) {
+    console.error("Erreur read messages:", error);
+    return;
+  }
+
+  chat.innerHTML = "";
+
+  messages.forEach((msg) => {
+    const div = document.createElement("div");
+    div.className = "message " + (msg.sender === user ? "mine" : "other");
+
+    let html = "";
+    if (msg.text) html += `<span>${msg.text}</span>`;
+    if (msg.image_url) html += `<br>${msg.image_url}`;
+
+    div.innerHTML = html;
+    chat.appendChild(div);
+  });
+
+  chat.scrollTop = chat.scrollHeight;
+}
+
+// ----------------------------------------------------
+// CLEAR CHAT
+// ----------------------------------------------------
+async function clearChat() {
+  if (!confirm("Supprimer tous les messages ?")) return;
+
+  const { data: messages } = await supabaseClient
+    .from("messages")
+    .select("image_url");
+
+  for (let msg of messages) {
+    if (msg.image_url) {
+      const filename = msg.image_url.split("/").pop();
+      await supabaseClient.storage
+        .from("chat-images")
+        .remove(["photos/" + filename]);
+    }
+  }
+
+  await supabaseClient.from("messages").delete().neq("id", 0);
+}
+
+// ----------------------------------------------------
+// AUTO RESIZE TEXTAREA
+// ----------------------------------------------------
+const messageInput = document.getElementById("messageInput");
+messageInput.addEventListener("input", autoResizeTextarea);
+
+function autoResizeTextarea() {
+  messageInput.style.height = "auto";
+  messageInput.style.height = messageInput.scrollHeight + "px";
+}
+
+// ----------------------------------------------------
+// CAMERA
+// ----------------------------------------------------
+document.getElementById("cameraButton").addEventListener("click", () => {
+  document.getElementById("imageInput").click();
+});
