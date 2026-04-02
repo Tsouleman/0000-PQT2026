@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chat Supabase</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
@@ -26,7 +26,7 @@
 
     <div id="chat"></div>
 
-    <!-- APERCU PHOTO -->
+    <!-- Aperçu photo -->
     <div id="previewBox" class="preview-box" style="display:none;">
         <img id="previewImg" />
         <div class="preview-buttons">
@@ -38,10 +38,8 @@
     <div id="inputArea">
         <textarea id="messageInput" placeholder="Écrire un message..." rows="1"></textarea>
 
-        <!-- CAMERA -->
         <button id="cameraButton" type="button">📷</button>
 
-        <!-- INPUT CAMÉRA -->
         <input 
             type="file" 
             id="imageInput" 
@@ -49,15 +47,14 @@
             capture="environment"
             style="display:none" />
 
-        <!-- BOUTON ENVOI TEXTE -->
         <button onclick="sendTextOnly()">➤</button>
     </div>
 </div>
 
-<!-- SUPABASE -->
+<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- SCRIPT -->
+<!-- TON SCRIPT -->
 <script src="script.js"></script>
 
 </body>
