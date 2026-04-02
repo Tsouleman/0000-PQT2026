@@ -8,7 +8,7 @@ const SUPABASE_KEY =
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ----------------------------------------------------
-// UTILISATEUR LOCAL (corrigé)
+// UTILISATEUR LOCAL
 // ----------------------------------------------------
 let user = localStorage.getItem("chatUser");
 if (!user) {
@@ -17,7 +17,7 @@ if (!user) {
 }
 
 // ----------------------------------------------------
-// LOGIN SIMPLE
+// LOGIN
 // ----------------------------------------------------
 function login() {
   const pass = document.getElementById("password").value;
@@ -31,7 +31,7 @@ function login() {
 }
 
 // ----------------------------------------------------
-// ENVOI MESSAGE + PHOTO
+// ENVOI MESSAGE + PHOTO (corrigé pour Android & iOS)
 // ----------------------------------------------------
 async function sendMessage() {
   const text = document.getElementById("messageInput").value.trim();
@@ -42,29 +42,31 @@ async function sendMessage() {
 
   let imageUrl = null;
 
-  // UPLOAD IMAGE
+  // ✅ UPLOAD IMAGE AVEC DOSSIER "photos/"
   if (file) {
     const fileName =
-      "photo_" +
-      Date.now() +
-      "_" +
-      file.name.replace(/\s/g, "_");
+      "photo_" + Date.now() + "_" + file.name.replace(/\s/g, "_");
+
+    const path = "photos/" + fileName;
 
     const { data, error } = await supabaseClient.storage
       .from("chat-images")
-      .upload(fileName, file);
+      .upload(path, file);
 
     if (error) {
       alert("Erreur upload image : " + error.message);
+      console.error("UPLOAD ERROR:", error);
       return;
     }
 
     imageUrl = supabaseClient.storage
       .from("chat-images")
-      .getPublicUrl(fileName).data.publicUrl;
+      .getPublicUrl(path).data.publicUrl;
+
+    console.log("✅ Image URL:", imageUrl);
   }
 
-  // INSERT MESSAGE
+  // ✅ INSERT MESSAGE
   const { error: insertError } = await supabaseClient
     .from("messages")
     .insert({
@@ -75,7 +77,7 @@ async function sendMessage() {
     });
 
   if (insertError) {
-    console.error("Erreur insert Supabase :", insertError);
+    console.error("Erreur insert:", insertError);
     alert("Erreur insertion : " + insertError.message);
   }
 
@@ -85,7 +87,7 @@ async function sendMessage() {
 }
 
 // ----------------------------------------------------
-// ECOUTE TEMPS RÉEL (VERSION SUPABASE 2026 ✅)
+// TEMPS RÉEL (Version SUPABASE 2026 ✅)
 // ----------------------------------------------------
 function listenMessages() {
   supabaseClient
@@ -108,7 +110,7 @@ function listenMessages() {
 }
 
 // ----------------------------------------------------
-// MISE À JOUR DU CHAT
+// RÉCUPÉRATION & AFFICHAGE DU CHAT
 // ----------------------------------------------------
 async function updateMessages() {
   const chat = document.getElementById("chat");
@@ -131,7 +133,10 @@ async function updateMessages() {
 
     let html = "";
     if (msg.text) html += `<span>${msg.text}</span>`;
-    if (msg.image_url) html += `<br><img src="${msg.image_url}" />`;
+    
+    // ✅ AFFICHE L’IMAGE CORRECTEMENT
+    if (msg.image_url)
+      html += `<br><img src="${msg.image_url}" style="max-width:100%;border-radius:10px;">`;
 
     div.innerHTML = html;
     chat.appendChild(div);
@@ -153,7 +158,7 @@ async function clearChat() {
   for (let msg of messages) {
     if (msg.image_url) {
       const path = msg.image_url.split("/").pop();
-      await supabaseClient.storage.from("chat-images").remove([path]);
+      await supabaseClient.storage.from("chat-images").remove(["photos/" + path]);
     }
   }
 
@@ -168,15 +173,12 @@ messageInput.addEventListener("input", autoResizeTextarea);
 
 function autoResizeTextarea() {
   messageInput.style.height = "auto";
-  messageInput.style.height =
-    messageInput.scrollHeight + "px";
+  messageInput.style.height = messageInput.scrollHeight + "px";
 }
 
 // ----------------------------------------------------
 // OUVERTURE APPAREIL PHOTO
 // ----------------------------------------------------
-document
-  .getElementById("cameraButton")
-  .addEventListener("click", () => {
-    document.getElementById("imageInput").click();
-  });
+document.getElementById("cameraButton").addEventListener("click", () => {
+  document.getElementById("imageInput").click();
+});
