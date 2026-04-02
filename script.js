@@ -1,3 +1,4 @@
+
 // ----------------------------------------------------
 // CONFIG SUPABASE
 // ----------------------------------------------------
@@ -57,6 +58,7 @@ async function sendMessage() {
     console.log("📥 Réponse upload :", response);
 
     if (response.error) {
+      console.error("❌ Upload error :", response.error);
       alert("Erreur upload image : " + response.error.message);
       return;
     }
@@ -81,7 +83,7 @@ async function sendMessage() {
 }
 
 // ----------------------------------------------------
-// TEMPS RÉEL
+// TEMPS RÉEL (Supabase 2026)
 // ----------------------------------------------------
 function listenMessages() {
   supabaseClient
@@ -97,15 +99,20 @@ function listenMessages() {
 }
 
 // ----------------------------------------------------
-// AFFICHAGE DES MESSAGES
+// AFFICHAGE DES MESSAGES (AVEC IMAGES)
 // ----------------------------------------------------
 async function updateMessages() {
   const chat = document.getElementById("chat");
 
-  const { data: messages } = await supabaseClient
+  const { data: messages, error } = await supabaseClient
     .from("messages")
     .select("*")
     .order("id", { ascending: true });
+
+  if (error) {
+    console.error("Erreur read messages:", error);
+    return;
+  }
 
   chat.innerHTML = "";
 
@@ -114,8 +121,13 @@ async function updateMessages() {
     div.className = "message " + (msg.sender === user ? "mine" : "other");
 
     let html = "";
+
     if (msg.text) html += `<span>${msg.text}</span>`;
-    if (msg.image_url) html += `<br>${msg.image_url}`;
+
+    // ✅ AFFICHE L’IMAGE
+    if (msg.image_url) {
+      html += `<br>${msg.image_url}`;
+    }
 
     div.innerHTML = html;
     chat.appendChild(div);
@@ -163,4 +175,3 @@ function autoResizeTextarea() {
 document.getElementById("cameraButton").addEventListener("click", () => {
   document.getElementById("imageInput").click();
 });
-
