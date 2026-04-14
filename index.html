@@ -2,56 +2,56 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chat privé</title>
-  <link rel="stylesheet" href="style.css">
+  style.css
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="login">
-  <h2>Accès au chat</h2>
-  <input id="displayName" type="text" placeholder="Votre nom">
-  <input id="accessCode" type="password" placeholder="Votre code personnel">
-  <button id="loginBtn">Entrer</button>
-  <div id="loginError"></div>
-</div>
+  <!-- LOGIN -->
+  <div id="login">
+    <h2>Accès au chat</h2>
+    <input id="displayName" type="text" placeholder="Votre nom" autocomplete="name" />
+    <input id="accessCode" type="password" placeholder="Votre code personnel" autocomplete="one-time-code" />
+    <button id="loginBtn">Entrer</button>
+    <div id="loginError" aria-live="polite"></div>
+  </div>
 
-<!-- CHAT -->
-<div id="chatApp">
-  <div id="topBar">
-    <div>
-      <div id="peerName">…</div>
-      <div id="peerStatus">…</div>
+  <!-- CHAT -->
+  <div id="chatApp">
+    <div id="topBar">
+      <div class="topLeft">
+        <div id="peerName">…</div>
+        <div id="peerStatus">…</div>
+      </div>
+      <div class="topRight">
+        <button id="themeBtn" title="Mode sombre">🌙</button>
+        <button id="clearBtn" title="Vider la conversation">🗑️</button>
+      </div>
     </div>
-    <div style="display:flex; gap:8px;">
-      <button id="themeBtn">🌙</button>
-      <button id="clearBtn">🗑️</button>
+
+    <button id="loadMoreBtn" class="secondary" style="display:none;">Charger plus</button>
+
+    <div id="chat"></div>
+
+    <div id="replyPreview" style="display:none;">
+      <div id="replyText"></div>
+      <button id="cancelReply" title="Annuler la réponse">✕</button>
+    </div>
+
+    <div id="inputArea">
+      <textarea id="messageInput" rows="1" placeholder="Écrire un message…"></textarea>
+
+      <label for="imageInput" id="cameraLabel" title="Envoyer une photo">📷</label>
+      <input id="imageInput" type="file" accept="image/*" hidden />
+
+      <button id="sendBtn" title="Envoyer">➤</button>
     </div>
   </div>
 
-  <button id="loadMoreBtn" style="display:none;">Charger plus</button>
-
-  <div id="chat"></div>
-
-  <div id="replyPreview" style="display:none;">
-    <div id="replyText"></div>
-    <button id="cancelReply">✕</button>
-  </div>
-
-  <div id="inputArea">
-    <textarea id="messageInput" placeholder="Écrire un message…" rows="1"></textarea>
-
-    <label for="imageInput" id="cameraLabel">📷</label>
-    <input id="imageInput" type="file" accept="image/*" hidden>
-
-    <button id="sendBtn">➤</button>
-  </div>
-</div>
-
-<!-- SUPABASE -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="script.js"></script>
-
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/s/script>
+  <!-- App JS -->
+  <script src="script.js"></script>
 </body>
 </html>
