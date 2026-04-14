@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chat privé</title>
-  style.css
+
+  <!-- ✅ CSS -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
@@ -13,7 +15,7 @@
     <h2>Accès au chat</h2>
     <input id="displayName" type="text" placeholder="Votre nom" autocomplete="name" />
     <input id="accessCode" type="password" placeholder="Votre code personnel" autocomplete="one-time-code" />
-    <button id="loginBtn">Entrer</button>
+    <button id="loginBtn" type="button">Entrer</button>
     <div id="loginError" aria-live="polite"></div>
   </div>
 
@@ -25,18 +27,18 @@
         <div id="peerStatus">…</div>
       </div>
       <div class="topRight">
-        <button id="themeBtn" title="Mode sombre">🌙</button>
-        <button id="clearBtn" title="Vider la conversation">🗑️</button>
+        <button id="themeBtn" title="Mode sombre" type="button">🌙</button>
+        <button id="clearBtn" title="Vider la conversation" type="button">🗑️</button>
       </div>
     </div>
 
-    <button id="loadMoreBtn" class="secondary" style="display:none;">Charger plus</button>
+    <button id="loadMoreBtn" class="secondary" style="display:none;" type="button">Charger plus</button>
 
     <div id="chat"></div>
 
     <div id="replyPreview" style="display:none;">
       <div id="replyText"></div>
-      <button id="cancelReply" title="Annuler la réponse">✕</button>
+      <button id="cancelReply" title="Annuler la réponse" type="button">✕</button>
     </div>
 
     <div id="inputArea">
@@ -45,13 +47,14 @@
       <label for="imageInput" id="cameraLabel" title="Envoyer une photo">📷</label>
       <input id="imageInput" type="file" accept="image/*" hidden />
 
-      <button id="sendBtn" title="Envoyer">➤</button>
+      <button id="sendBtn" title="Envoyer" type="button">➤</button>
     </div>
   </div>
 
-  <!-- Supabase JS -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/s/script>
-  <!-- App JS -->
+  <!-- ✅ Supabase JS (correct) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- ✅ App JS -->
   <script src="script.js"></script>
 </body>
 </html>
