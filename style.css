@@ -1,0 +1,124 @@
+:root {
+  --bg: #7a7d7d;
+  --top: #128c7e;
+  --mine: #dcf8c6;
+  --other: #ffffff;
+  --accent: #128c7e;
+}
+
+body.dark {
+  --bg: #121212;
+  --top: #1f2c34;
+  --mine: #005c4b;
+  --other: #1f2c34;
+  --accent: #00a884;
+}
+
+html, body {
+  margin: 0;
+  height: 100%;
+  font-family: sans-serif;
+  background: var(--bg);
+}
+
+#login, #chatApp {
+  max-width: 520px;
+  margin: auto;
+  padding: 12px;
+}
+
+#login {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#login input, #login button {
+  padding: 12px;
+  margin: 6px 0;
+  font-size: 16px;
+}
+
+#login button {
+  background: var(--accent);
+  color: white;
+  border: none;
+}
+
+#chatApp {
+  display: none;
+  flex-direction: column;
+  height: 100vh;
+}
+
+#topBar {
+  display: flex;
+  justify-content: space-between;
+  background: var(--top);
+  color: white;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+#chat {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 0;
+}
+
+.message {
+  max-width: 80%;
+  padding: 8px 12px;
+  border-radius: 18px;
+  font-size: 14px;
+}
+
+.mine { align-self: flex-end; background: var(--mine); }
+.other { align-self: flex-start; background: var(--other); }
+
+.message img {
+  max-width: 100%;
+  margin-top: 6px;
+  border-radius: 10px;
+}
+
+.status {
+  font-size: 11px;
+  opacity: .7;
+  text-align: right;
+}
+
+#inputArea {
+  display: flex;
+  gap: 6px;
+}
+
+#messageInput {
+  flex: 1;
+  padding: 10px;
+  border-radius: 20px;
+}
+
+#cameraLabel, #sendBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+#replyPreview {
+  background: rgba(0,0,0,.1);
+  padding: 6px;
+  border-left: 4px solid var(--accent);
+  display: flex;
+  justify-content: space-between;
+}
