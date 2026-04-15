@@ -364,6 +364,7 @@ async function toBlobUrl(path){
 async function buildMessageNode(msg){
   const div = document.createElement("div");
   div.className = "message " + (msg.user_id === myUserId ? "mine" : "other");
+   div.dataset.msgId = msg.id; //
 
   let quoteHtml = "";
   if(msg.reply){
