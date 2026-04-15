@@ -2,7 +2,7 @@
    CONFIG SUPABASE (TES VALEURS)
    ========================= */
 const SUPABASE_URL = "https://ikdizsnzfbhuwgkoucvp.supabase.co";
-const SUPABASE_KEY = "sb_publishable_xbdkTKPcST8rWyOZpeGhnA_RhO--F9JI";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrZGl6c256ZmJodXdna291Y3ZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNzI0NjQsImV4cCI6MjA5MTc0ODQ2NH0.JtIkQmdFXrph-rTab--CqpiP8LAC7FiyNi1OMpUaWgk";
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
