@@ -396,9 +396,20 @@ async function buildMessageNode(msg){
   div.innerHTML = `${quoteHtml}${textHtml}${imgHtml}${timeHtml}${actionsHtml}`;
 
   div.querySelector('[data-a="reply"]').addEventListener("click", () => setReply(msg));
-  div.querySelector('[data-a="delete"]').addEventListener("click", async () => {
-    await sb.from("messages").delete().eq("id", msg.id);
-  });
+div.querySelector('[data-a="delete"]').addEventListener("click", async () => {
+  try {
+    const { error } = await sb.from("messages").delete().eq("id", msg.id);
+    if (error) throw error;
+
+    // ✅ suppression immédiate dans l’UI
+    div.remove();
+
+  } catch (err) {
+    console.error(err);
+    alert("Erreur suppression : " + (err.message || "inconnue"));
+  }
+});
+
 
   return div;
 }
