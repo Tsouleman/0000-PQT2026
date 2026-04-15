@@ -334,6 +334,20 @@ function subscribeRealtime(){
       chatEl.appendChild(await buildMessageNode(data));
       chatEl.scrollTop = chatEl.scrollHeight;
     })
+     
+.on("postgres_changes", {
+  event: "DELETE",
+  schema: "public",
+  table: "messages",
+  filter: `room_id=eq.${roomId}`
+}, (payload) => {
+  const deletedId = payload.old?.id;
+  if (!deletedId) return;
+
+  const el = chatEl.querySelector(`[data-msg-id="${deletedId}"]`);
+  if (el) el.remove();
+})
+
     .on("postgres_changes", {
       event:"UPDATE",
       schema:"public",
