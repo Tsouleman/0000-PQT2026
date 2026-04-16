@@ -28,6 +28,11 @@ const chatEl = document.getElementById("chat");
 const messageInput = document.getElementById("messageInput");
 const imageInput = document.getElementById("imageInput");
 const sendBtn = document.getElementById("sendBtn");
+const cameraBtn = document.getElementById("cameraBtn");
+const galleryBtn = document.getElementById("galleryBtn");
+const cameraInput = document.getElementById("cameraInput");
+const galleryInput = document.getElementById("galleryInput");
+
 
 const replyPreview = document.getElementById("replyPreview");
 const replyText = document.getElementById("replyText");
@@ -428,14 +433,32 @@ div.querySelector('[data-a="delete"]').addEventListener("click", async () => {
   return div;
 }
 
+
+cameraBtn.addEventListener("click", () => cameraInput.click());
+galleryBtn.addEventListener("click", () => galleryInput.click());
+
+cameraInput.addEventListener("change", () => {
+  const file = cameraInput.files?.[0];
+  if (file) sendMessage(file);
+  cameraInput.value = "";
+});
+
+galleryInput.addEventListener("change", () => {
+  const file = galleryInput.files?.[0];
+  if (file) sendMessage(file);
+  galleryInput.value = "";
+});
+
 /* =========================
    SEND
    ========================= */
 sendBtn.addEventListener("click", sendMessage);
 
-async function sendMessage(){
+
+async function sendMessage(fileOverride = null){
   const text = messageInput.value.trim();
-  const file = imageInput.files?.[0];
+  const file = fileOverride || imageInput.files?
+
 
   if(!text && !file) return;
 
