@@ -215,7 +215,7 @@ function updatePeerStatus(){
 
   if(typingFresh) peerStatusEl.textContent = "en train d’écrire…";
   else if(online) peerStatusEl.textContent = "en ligne";
-  else peerStatusEl.textContent = `vu à ${formatTime(peer.last_seen_at)}`;
+  else peerStatusEl.textContent = `en ligne à ${formatTime(peer.last_seen_at)}`;
 }
 
 async function setTyping(flag){
