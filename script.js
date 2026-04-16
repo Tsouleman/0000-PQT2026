@@ -434,45 +434,53 @@ div.querySelector('[data-a="delete"]').addEventListener("click", async () => {
 }
 
 
-cameraBtn.addEventListener("click", () => cameraInput.click());
-galleryBtn.addEventListener("click", () => galleryInput.click());
 
-cameraInput.addEventListener("change", () => {
-  const file = cameraInput.files?.[0];
-  if (file) sendMessage(file);
-  cameraInput.value = "";
-});
+if (cameraBtn && cameraInput) {
+  cameraBtn.addEventListener("click", () => cameraInput.click());
 
-galleryInput.addEventListener("change", () => {
-  const file = galleryInput.files?.[0];
-  if (file) sendMessage(file);
-  galleryInput.value = "";
-});
+  cameraInput.addEventListener("change", () => {
+    const file = cameraInput.files?.[0];
+    if (file) sendMessage(file);
+    cameraInput.value = "";
+  });
+}
+
+if (galleryBtn && galleryInput) {
+  galleryBtn.addEventListener("click", () => galleryInput.click());
+
+  galleryInput.addEventListener("change", () => {
+    const file = galleryInput.files?.[0];
+    if (file) sendMessage(file);
+    galleryInput.value = "";
+  });
+}
 
 /* =========================
    SEND
    ========================= */
-sendBtn.addEventListener("click", sendMessage);
 
+// ⚠️ IMPORTANT : ne pas passer l'event comme paramètre à sendMessage
+sendBtn.addEventListener("click", () => sendMessage());
 
-async function sendMessage(fileOverride = null){
+async function sendMessage(fileOverride = null) {
   const text = messageInput.value.trim();
-  const file = fileOverride || imageInput.files?
 
+  // ✅ Corrige la ligne cassée + gère l’override
+  const file = (fileOverride instanceof File) ? fileOverride : (imageInput.files?.[0] || null);
 
-  if(!text && !file) return;
+  if (!text && !file) return;
 
   let image_path = null;
 
-  try{
-    if(file){
-      const safe = file.name.replace(/\s+/g,"_");
+  try {
+    if (file) {
+      const safe = file.name.replace(/\s+/g, "_");
       image_path = `room/${roomId}/${myUserId}/${Date.now()}_${safe}`;
 
       const { error: upErr } = await sb.storage.from("chat-images")
-        .upload(image_path, file, { cacheControl:"3600", upsert:false });
+        .upload(image_path, file, { cacheControl: "3600", upsert: false });
 
-      if(upErr) throw upErr;
+      if (upErr) throw upErr;
     }
 
     const payload = {
@@ -484,7 +492,7 @@ async function sendMessage(fileOverride = null){
     };
 
     const { error } = await sb.from("messages").insert(payload);
-    if(error) throw error;
+    if (error) throw error;
 
     messageInput.value = "";
     imageInput.value = "";
@@ -492,15 +500,16 @@ async function sendMessage(fileOverride = null){
     clearReply();
 
     await sb.from("room_members")
-      .update({ is_typing:false, typing_updated_at:new Date().toISOString() })
+      .update({ is_typing: false, typing_updated_at: new Date().toISOString() })
       .eq("room_id", roomId)
       .eq("user_id", myUserId);
 
-  }catch(err){
+  } catch (err) {
     console.error(err);
     alert("Erreur envoi : " + (err.message || "inconnue"));
   }
 }
+
 
 /* =========================
    CLEAR CHAT
