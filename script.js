@@ -356,11 +356,6 @@ function startTicksPolling(){
 
 
 
-  // ✅ iOS/Safari : évènements utiles (retour page / focus / interaction)
-  window.addEventListener("pageshow", ping);
-  window.addEventListener("focus", ping);
-  window.addEventListener("touchstart", () => ping(), { passive: true });
-}
 
 /* =========================
    PAGINATION
