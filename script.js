@@ -68,7 +68,6 @@ let typingTimer = null;
 let presenceTimer = null;
 let ticksPollTimer = null;
 let realtimeChannel = null;
-let ticksPollTimer = null;
 
 /* =========================
    THEME
@@ -207,7 +206,6 @@ async function login(){
     return;
   }
    
-window.login = login; 
 
   try{
     // Reuse session if possible
@@ -324,22 +322,26 @@ function startPresenceLoop(){
   const ping = async () => {
     if(!roomId || !myUserId) return;
 
-    const nowIso = new Date().toISOString();
-
-    // IMPORTANT : .select(...) permet de savoir si 1 ligne a été mise à jour
-    const { data, error } = await sb.from("room_members")
-      .update({ last_seen_at: nowIso, is_typing: false })
+    const { error } = await sb.from("room_members")
+      .update({ last_seen_at: new Date().toISOString() })
       .eq("room_id", roomId)
-      .eq("user_id", myUserId)
-      .select("last_seen_at");
+      .eq("user_id", myUserId);
 
-    const ok = Array.isArray(data) && data.length === 1;
+    if (error) console.error("presence ping error", error);
+  };
 
-    if (debugLine) {
-      debugLine.textContent =
-        `${debugLine.textContent.split(" | ")[0]} | ping=${ok ? "OK" : "0row"} ${nowIso.slice(11,19)}` +
-        (error ? ` err=${error.message}` : "");
-    }
+  ping();
+  presenceTimer = setInterval(ping, 25000);
+
+  document.addEventListener("visibilitychange", () => {
+    if(!document.hidden) ping();
+  });
+
+  // iOS-friendly
+  window.addEventListener("pageshow", ping);
+  window.addEventListener("focus", ping);
+  window.addEventListener("touchstart", () => ping(), { passive: true });
+}
 
    
 function startTicksPolling(){
@@ -352,19 +354,7 @@ function startTicksPolling(){
 }
 
 
-    if (error) console.error("presence ping error", error);
-  };
 
-  // ping immédiat
-  ping();
-
-  // ping périodique (iOS peut throttler en arrière-plan)
-  presenceTimer = setInterval(ping, 25000);
-
-  // quand l’onglet redevient visible
-  document.addEventListener("visibilitychange", () => {
-    if(!document.hidden) ping();
-  });
 
   // ✅ iOS/Safari : évènements utiles (retour page / focus / interaction)
   window.addEventListener("pageshow", ping);
