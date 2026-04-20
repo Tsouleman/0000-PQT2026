@@ -8,10 +8,6 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 
 
-document.addEventListener("DOMContentLoaded", () => {
-  const el = document.getElementById("loginError");
-  if (el) el.textContent = "✅ JS chargé";
-});
 
 
 
