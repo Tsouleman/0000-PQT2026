@@ -206,6 +206,8 @@ async function login(){
     loginError.textContent = "Merci de renseigner votre nom et votre code.";
     return;
   }
+   
+window.login = login; 
 
   try{
     // Reuse session if possible
