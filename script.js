@@ -6,6 +6,15 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const el = document.getElementById("loginError");
+  if (el) el.textContent = "✅ JS chargé";
+});
+
+
+
 /* =========================
    UI REFS
    ========================= */
