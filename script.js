@@ -114,6 +114,34 @@ async function markAsRead() {
 }
 
 
+function refreshTicksUI() {
+  const peer = peerUserId ? membersCache.get(peerUserId) : null;
+  if (!peer) return;
+
+  document.querySelectorAll(".message.mine").forEach(el => {
+    const createdAt = el.dataset.createdAt;
+    const tickSpan = el.querySelector("[data-ticks]");
+    if (!createdAt || !tickSpan) return;
+
+    const msgTime = new Date(createdAt).getTime();
+
+    let ticks = "✓";
+    let cls = "ticks ticks-sent";
+
+    if (peer.last_seen_at && new Date(peer.last_seen_at).getTime() >= msgTime) {
+      ticks = "✓✓";
+      cls = "ticks ticks-delivered";
+    }
+
+    if (peer.last_read_at && new Date(peer.last_read_at).getTime() >= msgTime) {
+      ticks = "✓✓";
+      cls = "ticks ticks-read";
+    }
+
+    tickSpan.textContent = ticks;
+    tickSpan.className = cls;
+  });
+}
 
 
 /* Reply */
@@ -428,6 +456,7 @@ function subscribeRealtime(){
     }, (payload) => {
       membersCache.set(payload.new.user_id, payload.new);
       updatePeerStatus();
+      refreshTicksUI();
     })
     .subscribe();
 }
