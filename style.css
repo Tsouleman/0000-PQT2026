@@ -264,3 +264,32 @@ body.dark #replyPreview{ background:rgba(255,255,255,.06); }
 .ticks-sent{ color:#8a8a8a; }       /* ✓ gris */
 .ticks-delivered{ color:#8a8a8a; }  /* ✓✓ gris */
 .ticks-read{ color:#1f8cff; }       /* ✓✓ bleu */
+
+
+/* Quote (réponse) + miniature */
+.quote{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.quote-thumb{
+  width:36px;
+  height:36px;
+  object-fit:cover;
+  border-radius:6px;
+  flex:0 0 auto;
+}
+
+.quote-thumb.placeholder{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:36px;
+  height:36px;
+  border-radius:6px;
+  background: rgba(0,0,0,0.08);
+}
+
+.q-body{ min-width:0; }
+.q-snippet{ opacity:0.85; }
