@@ -92,6 +92,27 @@ function formatTime(ts){
 }
 
 
+function isNearBottom(el, px = 80) {
+  return el.scrollHeight - el.scrollTop - el.clientHeight < px;
+}
+
+let readDebounce = null;
+
+async function markAsRead() {
+  if (!roomId || !myUserId) return;
+
+  // Anti-spam : 1 update max par seconde
+  if (readDebounce) return;
+  readDebounce = setTimeout(() => (readDebounce = null), 1000);
+
+  const { error } = await sb.from("room_members")
+    .update({ last_read_at: new Date().toISOString() })
+    .eq("room_id", roomId)
+    .eq("user_id", myUserId);
+
+  if (error) console.error("markAsRead error", error);
+}
+
 
 
 
@@ -121,6 +142,15 @@ messageInput.addEventListener("keydown", (e) => {
     sendMessage();
   }
 });
+
+
+
+chatEl.addEventListener("scroll", () => {
+  if (isNearBottom(chatEl)) markAsRead();
+});
+
+
+
 
 /* =========================
    LOGIN
@@ -170,6 +200,7 @@ chatApp.style.display = "flex";
 await refreshMembers();
 subscribeRealtime();
 await loadInitialMessages();
+if (isNearBottom(chatEl)) markAsRead();
 startPresenceLoop();
 
    
@@ -187,7 +218,7 @@ startPresenceLoop();
 async function refreshMembers(){
   const { data, error } = await sb
     .from("room_members")
-    .select("user_id, display_name, last_seen_at, is_typing, typing_updated_at")
+    .select("user_id, display_name, last_seen_at, is_typing, typing_updated_at, last_read_at")
     .eq("room_id", roomId);
 
   if(error){
@@ -373,6 +404,7 @@ function subscribeRealtime(){
       await refreshMembers();
       chatEl.appendChild(await buildMessageNode(data));
       chatEl.scrollTop = chatEl.scrollHeight;
+      markAsRead();
     })
      
 .on("postgres_changes", {
@@ -418,7 +450,8 @@ async function toBlobUrl(path){
 async function buildMessageNode(msg){
   const div = document.createElement("div");
   div.className = "message " + (msg.user_id === myUserId ? "mine" : "other");
-   div.dataset.msgId = msg.id; //
+   div.dataset.msgId = msg.id;
+   div.dataset.createdAt = msg.created_at; //
 
   let quoteHtml = "";
   if(msg.reply){
@@ -439,7 +472,35 @@ async function buildMessageNode(msg){
     imgHtml = blobUrl ? `<img src="${blobUrl}" alt="image" />` : `<div class="text" style="opacity:.7;">[image]</div>`;
   }
 
-  const timeHtml = `<div class="status">${formatTime(msg.created_at)}</div>`;
+  let ticksHtml = "";
+
+if (msg.user_id === myUserId) {
+  const peer = peerUserId ? membersCache.get(peerUserId) : null;
+
+  // par défaut : envoyé
+  let ticks = "✓";
+  let cls = "ticks ticks-sent";
+
+  if (peer) {
+    const msgTime = new Date(msg.created_at).getTime();
+
+    // (optionnel) livré approx = ✓✓ gris si l’autre a été actif après le message
+    if (peer.last_seen_at && new Date(peer.last_seen_at).getTime() >= msgTime) {
+      ticks = "✓✓";
+      cls = "ticks ticks-delivered";
+    }
+
+    // vu = ✓✓ bleu si last_read_at >= created_at
+    if (peer.last_read_at && new Date(peer.last_read_at).getTime() >= msgTime) {
+      ticks = "✓✓";
+      cls = "ticks ticks-read";
+    }
+  }
+
+  ticksHtml = ` <span class="${cls}" data-ticks>${ticks}</span>`;
+}
+
+const timeHtml = `<div class="status">${formatTime(msg.created_at)}${ticksHtml}</div>`;
 
   const actionsHtml = `
     <div style="margin-top:4px;">
