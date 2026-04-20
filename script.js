@@ -488,16 +488,31 @@ async function buildMessageNode(msg){
    div.dataset.msgId = msg.id;
    div.dataset.createdAt = msg.created_at; //
 
-  let quoteHtml = "";
-  if(msg.reply){
-    const author = membersCache.get(msg.reply.user_id)?.display_name || "…";
-    const snippet = (msg.reply.text || (msg.reply.image_path ? "[image]" : "") || "").slice(0,70);
-    quoteHtml = `
-      <div class="quote">
+  
+let quoteHtml = "";
+if (msg.reply) {
+  const author = membersCache.get(msg.reply.user_id)?.display_name || "…";
+  const snippet = (msg.reply.text || (msg.reply.image_path ? "[image]" : "") || "").slice(0,70);
+
+  // ✅ Miniature si le message auquel on répond contient une image
+  let thumbHtml = "";
+  if (msg.reply.image_path) {
+    const blobUrl = await toBlobUrl(msg.reply.image_path); // utilise déjà signedUrl + blob [1](https://otiselevatorfra-my.sharepoint.com/personal/julien_perinetti_portis_fr).js)
+    thumbHtml = blobUrl
+      ? `<img class="quote-thumb" src="${blobUrl}" alt="miniature" />`
+      : `<span class="quote-thumb placeholder">🖼️</span>`;
+  }
+
+  quoteHtml = `
+    <div class="quote">
+      ${thumbHtml}
+      <div class="q-body">
         <div class="q-author">${esc(author)}</div>
         <div class="q-snippet">${esc(snippet)}</div>
-      </div>`;
-  }
+      </div>
+    </div>`;
+}
+
 
   const textHtml = msg.text ? `<div class="text">${esc(msg.text)}</div>` : "";
 
