@@ -18,7 +18,7 @@
     <h2>Accès au chat</h2>
     <input id="displayName" type="text" placeholder="Votre nom" autocomplete="name" />
     <input id="accessCode" type="password" placeholder="Votre code personnel" autocomplete="one-time-code" />
-    <button id="loginBtn" type="button">Entrer</button>
+    <button id="loginBtn" type="button" onclick="login()">Entrer</button>
     <div id="loginError" aria-live="polite"></div>
   </div>
 
@@ -63,10 +63,12 @@
 </div>
 
 
-  <!-- ✅ Supabase JS (correct) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- ✅ App JS -->
-  <script src="script.js?v=20260420-1" defer></script>
+<!-- ✅ Supabase JS -->
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- ✅ App JS (bump la version pour casser le cache iOS) -->
+<script defer src="script.js?v=20260420-2"></script>
 </body>
 </html>
+
