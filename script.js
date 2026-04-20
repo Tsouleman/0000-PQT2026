@@ -40,7 +40,6 @@ const cancelReply = document.getElementById("cancelReply");
 
 
 
-const debugLine = document.getElementById("debugLine");
 
 /* =========================
    STATE
@@ -94,21 +93,6 @@ function formatTime(ts){
 
 
 
-async function debugMembership() {
-  if (!debugLine) return;
-
-  const { data, error } = await sb
-    .from("room_members")
-    .select("room_id,user_id,role,display_name,last_seen_at")
-    .eq("room_id", roomId);
-
-  const mine = data?.find(m => m.user_id === myUserId);
-
-  debugLine.textContent =
-    `room=${roomId?.slice(0,4)} user=${myUserId?.slice(0,4)} members=${data?.length || 0} ` +
-    (mine ? `I_AM_MEMBER role=${mine.role}` : `NOT_MEMBER`) +
-    (error ? ` err=${error.message}` : "");
-}
 
 
 /* Reply */
@@ -176,19 +160,19 @@ async function login(){
     if(error) throw error;
     if(!data || !data.length) throw new Error("Réponse RPC vide");
 
-    roomId = data[0].room_id;
-     await debugMembership();
+   
+roomId = data[0].room_id;
 
-    // Show app
-    loginDiv.style.display = "none";
-    chatApp.style.display = "flex";
+// Show app
+loginDiv.style.display = "none";
+chatApp.style.display = "flex";
 
-    await refreshMembers();
-    subscribeRealtime();
-    await loadInitialMessages();
-    startPresenceLoop();
+await refreshMembers();
+subscribeRealtime();
+await loadInitialMessages();
+startPresenceLoop();
 
-     await debugMembership();
+   
 
   }catch(err){
     console.error(err);
