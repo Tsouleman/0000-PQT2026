@@ -57,7 +57,9 @@ let replyToId = null;
 
 let typingTimer = null;
 let presenceTimer = null;
+let ticksPollTimer = null;
 let realtimeChannel = null;
+let ticksPollTimer = null;
 
 /* =========================
    THEME
@@ -226,6 +228,7 @@ loginDiv.style.display = "none";
 chatApp.style.display = "flex";
 
 await refreshMembers();
+startTicksPolling();   
 subscribeRealtime();
 await loadInitialMessages();
 if (isNearBottom(chatEl)) markAsRead();
@@ -326,6 +329,17 @@ function startPresenceLoop(){
         `${debugLine.textContent.split(" | ")[0]} | ping=${ok ? "OK" : "0row"} ${nowIso.slice(11,19)}` +
         (error ? ` err=${error.message}` : "");
     }
+
+   
+function startTicksPolling(){
+  if(ticksPollTimer) clearInterval(ticksPollTimer);
+
+  ticksPollTimer = setInterval(async () => {
+    await refreshMembers();   // relit last_read_at de l'autre
+    refreshTicksUI();         // met à jour ✓✓ bleu sans refresh page
+  }, 3000);
+}
+
 
     if (error) console.error("presence ping error", error);
   };
@@ -658,4 +672,5 @@ clearBtn.addEventListener("click", async () => {
 window.addEventListener("beforeunload", () => {
   if(presenceTimer) clearInterval(presenceTimer);
   if(typingTimer) clearTimeout(typingTimer);
+  if(ticksPollTimer) clearInterval(ticksPollTimer);
 });
