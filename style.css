@@ -246,3 +246,21 @@ body.dark #replyPreview{ background:rgba(255,255,255,.06); }
   user-select:none;
   border:none;
 }
+
+.status{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:6px;
+}
+
+.ticks{
+  font-weight:700;
+  font-size:12px;
+  letter-spacing:-1px;
+  user-select:none;
+}
+
+.ticks-sent{ color:#8a8a8a; }       /* ✓ gris */
+.ticks-delivered{ color:#8a8a8a; }  /* ✓✓ gris */
+.ticks-read{ color:#1f8cff; }       /* ✓✓ bleu */
