@@ -183,7 +183,58 @@ chatEl.addEventListener("scroll", () => {
   if (isNearBottom(chatEl)) markAsRead();
 });
 
+// =========================
+// IMAGE : compression simple (smartphone-friendly)
+// =========================
+async function compressImageSimple(file, maxSide = 1280, quality = 0.75) {
+  // Décodage avec orientation EXIF (mieux pour iPhone/Android)
+  let bitmap = null;
+  try {
+    if ("createImageBitmap" in window) {
+      bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+    }
+  } catch (e) {
+    bitmap = null;
+  }
 
+  // Fallback si createImageBitmap n'est pas dispo
+  let srcW, srcH, source;
+  if (bitmap) {
+    srcW = bitmap.width;
+    srcH = bitmap.height;
+    source = bitmap;
+  } else {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.src = url;
+    await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
+    URL.revokeObjectURL(url);
+    srcW = img.naturalWidth;
+    srcH = img.naturalHeight;
+    source = img;
+  }
+
+  // Resize (sans agrandir)
+  const ratio = Math.min(maxSide / srcW, maxSide / srcH, 1);
+  const outW = Math.round(srcW * ratio);
+  const outH = Math.round(srcH * ratio);
+
+  const canvas = document.createElement("canvas");
+  canvas.width = outW;
+  canvas.height = outH;
+
+  const ctx = canvas.getContext("2d", { alpha: false });
+  ctx.drawImage(source, 0, 0, outW, outH);
+
+  const blob = await new Promise((resolve) => {
+    canvas.toBlob(resolve, "image/jpeg", quality);
+  });
+
+  if (bitmap && "close" in bitmap) bitmap.close();
+
+  // Si toBlob renvoie null, fallback fichier original
+  return blob || file;
+}
 
 
 /* =========================
@@ -519,7 +570,7 @@ if (msg.reply) {
   let imgHtml = "";
   if(msg.image_path){
     const blobUrl = await toBlobUrl(msg.image_path);
-    imgHtml = blobUrl ? `<img src="${blobUrl}" alt="image" />` : `<div class="text" style="opacity:.7;">[image]</div>`;
+    imgHtml = blobUrl ? `<img loading="lazy" src="${blobUrl}" alt="image" />` : `<div class="text" style="opacity:.7;">[image]</div>`;
   }
 
   let ticksHtml = "";
@@ -626,8 +677,28 @@ async function sendMessage(fileOverride = null) {
       const { error: upErr } = await sb.storage.from("chat-images")
         .upload(image_path, file, { cacheControl: "3600", upsert: false });
 
-      if (upErr) throw upErr;
-    }
+ if (file) {
+  // Optionnel : limite sur très gros fichiers
+  if (file.size > 15 * 1024 * 1024) {
+    alert("Image trop lourde (max 15 Mo).");
+    return;
+  }
+
+  // ✅ Compression simple
+  const compressed = await compressImageSimple(file, 1280, 0.75);
+
+  // Nom de fichier propre (on force .jpg)
+  image_path = `room/${roomId}/${myUserId}/${Date.now()}.jpg`;
+
+  const { error: upErr } = await sb.storage.from("chat-images")
+    .upload(image_path, compressed, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: "image/jpeg"
+    });
+
+  if (upErr) throw upErr;
+}
 
     const payload = {
       room_id: roomId,
