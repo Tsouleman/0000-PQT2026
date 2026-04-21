@@ -184,56 +184,49 @@ chatEl.addEventListener("scroll", () => {
 });
 
 // =========================
-// IMAGE : compression simple (smartphone-friendly)
+// IMAGE : compression SAFE (support mobile)
 // =========================
-async function compressImageSimple(file, maxSide = 1280, quality = 0.75) {
-  // Décodage avec orientation EXIF (mieux pour iPhone/Android)
-  let bitmap = null;
+async function compressImageSafe(file) {
   try {
-    if ("createImageBitmap" in window) {
-      bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+    // Sécurité mobile : si APIs indisponibles → fallback
+    if (!window.HTMLCanvasElement || !window.FileReader) {
+      return file;
     }
-  } catch (e) {
-    bitmap = null;
-  }
 
-  // Fallback si createImageBitmap n'est pas dispo
-  let srcW, srcH, source;
-  if (bitmap) {
-    srcW = bitmap.width;
-    srcH = bitmap.height;
-    source = bitmap;
-  } else {
-    const url = URL.createObjectURL(file);
     const img = new Image();
+    const url = URL.createObjectURL(file);
     img.src = url;
-    await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
+
+    await new Promise((res, rej) => {
+      img.onload = res;
+      img.onerror = rej;
+    });
     URL.revokeObjectURL(url);
-    srcW = img.naturalWidth;
-    srcH = img.naturalHeight;
-    source = img;
+
+    const MAX = 1280;
+    const ratio = Math.min(MAX / img.width, MAX / img.height, 1);
+    const w = Math.round(img.width * ratio);
+    const h = Math.round(img.height * ratio);
+
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0, w, h);
+
+    const blob = await new Promise(res =>
+      canvas.toBlob(res, "image/jpeg", 0.75)
+    );
+
+    // Si Safari renvoie null → fallback
+    if (!blob) return file;
+
+    return blob;
+  } catch (err) {
+    console.warn("Compression fallback:", err);
+    return file; // ✅ fallback TOTAL
   }
-
-  // Resize (sans agrandir)
-  const ratio = Math.min(maxSide / srcW, maxSide / srcH, 1);
-  const outW = Math.round(srcW * ratio);
-  const outH = Math.round(srcH * ratio);
-
-  const canvas = document.createElement("canvas");
-  canvas.width = outW;
-  canvas.height = outH;
-
-  const ctx = canvas.getContext("2d", { alpha: false });
-  ctx.drawImage(source, 0, 0, outW, outH);
-
-  const blob = await new Promise((resolve) => {
-    canvas.toBlob(resolve, "image/jpeg", quality);
-  });
-
-  if (bitmap && "close" in bitmap) bitmap.close();
-
-  // Si toBlob renvoie null, fallback fichier original
-  return blob || file;
 }
 
 
@@ -685,7 +678,7 @@ async function sendMessage(fileOverride = null) {
   }
 
   // ✅ Compression simple
-  const compressed = await compressImageSimple(file, 1280, 0.75);
+  const compressed = await compressImageSafe(file);
 
   // Nom de fichier propre (on force .jpg)
   image_path = `room/${roomId}/${myUserId}/${Date.now()}.jpg`;
