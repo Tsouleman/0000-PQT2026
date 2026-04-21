@@ -183,51 +183,7 @@ chatEl.addEventListener("scroll", () => {
   if (isNearBottom(chatEl)) markAsRead();
 });
 
-// =========================
-// IMAGE : compression SAFE (support mobile)
-// =========================
-async function compressImageSafe(file) {
-  try {
-    // Sécurité mobile : si APIs indisponibles → fallback
-    if (!window.HTMLCanvasElement || !window.FileReader) {
-      return file;
-    }
 
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.src = url;
-
-    await new Promise((res, rej) => {
-      img.onload = res;
-      img.onerror = rej;
-    });
-    URL.revokeObjectURL(url);
-
-    const MAX = 1280;
-    const ratio = Math.min(MAX / img.width, MAX / img.height, 1);
-    const w = Math.round(img.width * ratio);
-    const h = Math.round(img.height * ratio);
-
-    const canvas = document.createElement("canvas");
-    canvas.width = w;
-    canvas.height = h;
-
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0, w, h);
-
-    const blob = await new Promise(res =>
-      canvas.toBlob(res, "image/jpeg", 0.75)
-    );
-
-    // Si Safari renvoie null → fallback
-    if (!blob) return file;
-
-    return blob;
-  } catch (err) {
-    console.warn("Compression fallback:", err);
-    return file; // ✅ fallback TOTAL
-  }
-}
 
 
 /* =========================
@@ -563,7 +519,7 @@ if (msg.reply) {
   let imgHtml = "";
   if(msg.image_path){
     const blobUrl = await toBlobUrl(msg.image_path);
-    imgHtml = blobUrl ? `<img loading="lazy" src="${blobUrl}" alt="image" />` : `<div class="text" style="opacity:.7;">[image]</div>`;
+    imgHtml = blobUrl ? `<img src="${blobUrl}" alt="image" />` : `<div class="text" style="opacity:.7;">[image]</div>`;
   }
 
   let ticksHtml = "";
@@ -670,28 +626,8 @@ async function sendMessage(fileOverride = null) {
       const { error: upErr } = await sb.storage.from("chat-images")
         .upload(image_path, file, { cacheControl: "3600", upsert: false });
 
- if (file) {
-  // Optionnel : limite sur très gros fichiers
-  if (file.size > 15 * 1024 * 1024) {
-    alert("Image trop lourde (max 15 Mo).");
-    return;
-  }
-
-  // ✅ Compression simple
-  const compressed = await compressImageSafe(file);
-
-  // Nom de fichier propre (on force .jpg)
-  image_path = `room/${roomId}/${myUserId}/${Date.now()}.jpg`;
-
-  const { error: upErr } = await sb.storage.from("chat-images")
-    .upload(image_path, compressed, {
-      cacheControl: "3600",
-      upsert: false,
-      contentType: "image/jpeg"
-    });
-
-  if (upErr) throw upErr;
-}
+      if (upErr) throw upErr;
+    }
 
     const payload = {
       room_id: roomId,
