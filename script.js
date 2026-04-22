@@ -183,7 +183,52 @@ chatEl.addEventListener("scroll", () => {
   if (isNearBottom(chatEl)) markAsRead();
 });
 
+async function compressImage(file, {
+  maxSize = 1280,
+  quality = 0.75,
+  mimeType = "image/jpeg"
+} = {}) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
 
+    img.onload = () => {
+      let { width, height } = img;
+
+      if (width > height && width > maxSize) {
+        height = Math.round(height * maxSize / width);
+        width = maxSize;
+      } else if (height > maxSize) {
+        width = Math.round(width * maxSize / height);
+        height = maxSize;
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, width, height);
+
+      canvas.toBlob(
+        blob => {
+          if (!blob) return reject(new Error("Compression failed"));
+          resolve(
+            new File(
+              [blob],
+              file.name.replace(/\.\w+$/, ".jpg"),
+              { type: mimeType }
+            )
+          );
+        },
+        mimeType,
+        quality
+      );
+    };
+
+    img.onerror = reject;
+    img.src = URL.createObjectURL(file);
+  });
+}
 
 
 /* =========================
@@ -619,15 +664,33 @@ async function sendMessage(fileOverride = null) {
   let image_path = null;
 
   try {
-    if (file) {
-      const safe = file.name.replace(/\s+/g, "_");
-      image_path = `room/${roomId}/${myUserId}/${Date.now()}_${safe}`;
 
-      const { error: upErr } = await sb.storage.from("chat-images")
-        .upload(image_path, file, { cacheControl: "3600", upsert: false });
+if (file) {
+  let compressed = file;
 
-      if (upErr) throw upErr;
-    }
+  // ✅ Compression uniquement pour les images
+  if (file.type.startsWith("image/")) {
+    compressed = await compressImage(file, {
+      maxSize: 1280,   // côté max (WhatsApp-like)
+      quality: 0.75    // bon compromis qualité / poids
+    });
+  }
+
+  const safe = compressed.name.replace(/\s+/g, "_");
+  image_path = `room/${roomId}/${myUserId}/${Date.now()}_${safe}`;
+
+  const { error: upErr } = await sb
+    .storage
+    .from("chat-images")
+    .upload(image_path, compressed, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: compressed.type
+    });
+
+  if (upErr) throw upErr;
+}
+
 
     const payload = {
       room_id: roomId,
