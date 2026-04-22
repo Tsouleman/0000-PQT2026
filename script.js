@@ -234,18 +234,20 @@ async function compressImage(file, {
 
 
 
+
 const imgModal = document.getElementById("imgModal");
 const imgModalImg = document.getElementById("imgModalImg");
 
 document.addEventListener("click", (e) => {
-  // ✅ clic sur une image dans un message
+  // ✅ clic sur une image dans un message → ouvrir
   if (e.target.tagName === "IMG" && e.target.closest(".message")) {
     imgModalImg.src = e.target.src;
     imgModal.style.display = "flex";
+    return;
   }
 
-  // ✅ clic sur le fond noir → fermer
-  if (e.target === imgModal) {
+  // ✅ clic sur l’image ouverte OU sur le fond noir → fermer
+  if (e.target === imgModal || e.target === imgModalImg) {
     imgModal.style.display = "none";
     imgModalImg.src = "";
   }
