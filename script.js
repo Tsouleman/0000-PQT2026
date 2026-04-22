@@ -231,6 +231,30 @@ async function compressImage(file, {
 }
 
 
+
+
+
+const imgModal = document.getElementById("imgModal");
+const imgModalImg = document.getElementById("imgModalImg");
+
+document.addEventListener("click", (e) => {
+  // ✅ clic sur une image dans un message
+  if (e.target.tagName === "IMG" && e.target.closest(".message")) {
+    imgModalImg.src = e.target.src;
+    imgModal.style.display = "flex";
+  }
+
+  // ✅ clic sur le fond noir → fermer
+  if (e.target === imgModal) {
+    imgModal.style.display = "none";
+    imgModalImg.src = "";
+  }
+});
+
+
+
+
+
 /* =========================
    LOGIN
    ========================= */
