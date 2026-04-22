@@ -474,13 +474,15 @@ async function buildMessageNode(msg){
     const author = membersCache.get(msg.reply.user_id)?.display_name || "…";
     const snippet = (msg.reply.text || (msg.reply.image_path ? "[image]" : "") || "").slice(0,70);
 
-    let thumbHtml = "";
-    if (msg.reply.image_path) {
-      const blobUrl = await toBlobUrl(msg.reply.image_path);
-      thumbHtml = blobUrl
-        ? `${blobUrl}`
-        : `<span class="quote-thumb placeholder">🖼️</span>`;
-    }
+
+let thumbHtml = "";
+if (msg.reply.image_path) {
+  const blobUrl = await toBlobUrl(msg.reply.image_path);
+  thumbHtml = blobUrl
+    ? `<img class="quote-thumb" src="${blobUrl}" alt="miniature" loading="lazy" />`
+    : `<span class="quote-thumb placeholder">🖼️</span>`;
+}
+
 
     quoteHtml = `
       <div class="quote">
@@ -494,13 +496,15 @@ async function buildMessageNode(msg){
 
   const textHtml = msg.text ? `<div class="text">${esc(msg.text)}</div>` : "";
 
-  let imgHtml = "";
-  if(msg.image_path){
-    const blobUrl = await toBlobUrl(msg.image_path);
-    imgHtml = blobUrl
-      ? `${blobUrl}`
-      : `<div class="text" style="opacity:.7;">[image]</div>`;
-  }
+
+let imgHtml = "";
+if (msg.image_path) {
+  const blobUrl = await toBlobUrl(msg.image_path);
+  imgHtml = blobUrl
+    ? `<img src="${blobUrl}" alt="image" loading="lazy" />`
+    : `<div class="text" style="opacity:.7;">[image]</div>`;
+}
+
 
   let ticksHtml = "";
   if (msg.user_id === myUserId) {
