@@ -94,6 +94,27 @@ function formatTime(ts){
   return `${h}:${m}`;
 }
 
+
+SeenFR(ts) {
+  const d = new Date(ts);
+  const now = new Date();
+
+  // compare les jours en "minuit"
+  const day = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const yesterday = today - 24 * 60 * 60 * 1000;
+
+  const hhmm = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+
+  if (day === today) return `en ligne à ${hhmm}`;
+  if (day === yesterday) return `en ligne hier à ${hhmm}`;
+
+  // Au-delà d'hier : WhatsApp-like (date + heure)
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  return `en ligne le ${dd}/${mm} à ${hhmm}`;
+}
+
 function isNearBottom(el, px = 80) {
   return el.scrollHeight - el.scrollTop - el.clientHeight < px;
 }
@@ -281,7 +302,7 @@ function updatePeerStatus(){
 
   if(typingFresh) peerStatusEl.textContent = "en train d’écrire…";
   else if(online) peerStatusEl.textContent = "en ligne";
-  else peerStatusEl.textContent = `en ligne à ${formatTime(peer.last_seen_at)}`;
+  else peerStatusEl.textContent = formatLastSeenFR(peer.last_seen_at);
 }
 
 async function setTyping(flag){
