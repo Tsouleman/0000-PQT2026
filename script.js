@@ -255,6 +255,19 @@ document.addEventListener("click", (e) => {
 
 
 
+async function requestAndroidNotificationPermission() {
+  if (!("Notification" in window)) return;
+  if (!("serviceWorker" in navigator)) return;
+
+  const permission = await Notification.requestPermission();
+
+  if (permission === "granted") {
+    console.log("✅ Notifications autorisées");
+  } else {
+    console.log("❌ Notifications refusées");
+  }
+}
+
 
 
 
