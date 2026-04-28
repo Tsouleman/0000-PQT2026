@@ -257,67 +257,83 @@ document.addEventListener("click", (e) => {
 
 
 
+
 /* =========================
    LOGIN
    ========================= */
 loginBtn.addEventListener("click", login);
 
-async function login(){
+async function login() {
   loginError.textContent = "";
 
   const code = accessCodeInput.value.trim();
   const name = displayNameInput.value.trim();
 
-  if(!code || !name){
+  if (!code || !name) {
     loginError.textContent = "Merci de renseigner votre nom et votre code.";
     return;
   }
-   
 
-  try{
-    // Reuse session if possible
-    const { data: sess } = await sb.auth.getSession();
-    let user = sess?.session?.user;
+  try {
+    // ✅ Authentification fiable multi‑appareils
+    // Email fictif basé sur le nom
+    const email = `${name.toLowerCase()}@chat.local`;
+    const password = code;
 
-    if(!user){
-      const { data: authData, error: authErr } = await sb.auth.signInAnonymously();
-      if(authErr) throw authErr;
-      user = authData.user;
+    let user = null;
+
+    // 1️⃣ Tentative de connexion
+    const { data: signInData, error: signInErr } =
+      await sb.auth.signInWithPassword({
+        email,
+        password
+      });
+
+    // 2️⃣ Si l'utilisateur n'existe pas → on le crée
+    if (signInErr) {
+      const { data: signUpData, error: signUpErr } =
+        await sb.auth.signUp({
+          email,
+          password
+        });
+
+      if (signUpErr) throw signUpErr;
+      user = signUpData.user;
+    } else {
+      user = signInData.user;
     }
 
     myUserId = user.id;
 
-    // Join via RPC (doit exister côté Supabase)
+    // ✅ Rejoindre la room via la RPC existante
     const { data, error } = await sb.rpc("join_room_with_code", {
       p_code: code,
       p_display_name: name
     });
 
-    if(error) throw error;
-    if(!data || !data.length) throw new Error("Réponse RPC vide");
+    if (error) throw error;
+    if (!data || !data.length) throw new Error("Réponse RPC vide");
 
-   
-roomId = data[0].room_id;
+    roomId = data[0].room_id;
 
-// Show app
-loginDiv.style.display = "none";
-chatApp.style.display = "flex";
+    // ✅ Affichage de l’app
+    loginDiv.style.display = "none";
+    chatApp.style.display = "flex";
 
-await refreshMembers();
-startTicksPolling();   
-subscribeRealtime();
-await loadInitialMessages();
-if (isNearBottom(chatEl)) markAsRead();
-startPresenceLoop();
+    await refreshMembers();
+    startTicksPolling();
+    subscribeRealtime();
+    await loadInitialMessages();
+    if (isNearBottom(chatEl)) markAsRead();
+    startPresenceLoop();
 
-   
-
-  }catch(err){
+  } catch (err) {
     console.error(err);
     loginError.textContent =
       "Connexion impossible. Vérifie le code et que le SQL Supabase est bien installé (RPC + tables).";
   }
 }
+
 
 /* =========================
    MEMBERS / PRESENCE / TYPING
