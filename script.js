@@ -268,7 +268,9 @@ async function requestAndroidNotificationPermission() {
   }
 }
 
-
+document.getElementById("notifBtn")?.addEventListener("click", () => {
+  requestAndroidNotificationPermission();
+});
 
 
 /* =========================
