@@ -327,12 +327,13 @@ async function login() {
     if (isNearBottom(chatEl)) markAsRead();
     startPresenceLoop();
 
-  } catch (err) {
-    console.error(err);
-    loginError.textContent =
-      "Connexion impossible. Vérifie le code et que le SQL Supabase est bien installé (RPC + tables).";
-  }
+
+catch (err) {
+  console.error("LOGIN ERROR:", err);
+  loginError.textContent =
+    err?.message || JSON.stringify(err) || "Erreur inconnue";
 }
+
 
 
 /* =========================
