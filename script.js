@@ -320,6 +320,7 @@ async function login() {
     loginDiv.style.display = "none";
     chatApp.style.display = "flex";
 
+
     await refreshMembers();
     startTicksPolling();
     subscribeRealtime();
@@ -327,12 +328,13 @@ async function login() {
     if (isNearBottom(chatEl)) markAsRead();
     startPresenceLoop();
 
-
-catch (err) {
-  console.error("LOGIN ERROR:", err);
-  loginError.textContent =
-    err?.message || JSON.stringify(err) || "Erreur inconnue";
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
+    loginError.textContent =
+      err?.message || JSON.stringify(err) || "Erreur inconnue";
+  }
 }
+
 
 
 
