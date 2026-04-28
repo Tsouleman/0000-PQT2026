@@ -330,16 +330,20 @@ async function login() {
     roomId = data[0].room_id;
 
 
+
 // ✅ Affichage de l’app
 loginDiv.style.display = "none";
 chatApp.style.display = "flex";
 
-// ✅ Enregistrement du Service Worker (Android uniquement)
+// ✅ Service Worker (Android)
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/sw.js")
     .then(() => console.log("✅ Service Worker enregistré"))
     .catch(err => console.error("❌ SW error", err));
 }
+
+// ✅ Demande de permission Android
+requestAndroidNotificationPermission();
 
 await refreshMembers();
 startTicksPolling();
@@ -347,6 +351,7 @@ subscribeRealtime();
 await loadInitialMessages();
 if (isNearBottom(chatEl)) markAsRead();
 startPresenceLoop();
+
 
 
   } catch (err) {
