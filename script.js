@@ -316,17 +316,25 @@ async function login() {
 
     roomId = data[0].room_id;
 
-    // ✅ Affichage de l’app
-    loginDiv.style.display = "none";
-    chatApp.style.display = "flex";
 
+// ✅ Affichage de l’app
+loginDiv.style.display = "none";
+chatApp.style.display = "flex";
 
-    await refreshMembers();
-    startTicksPolling();
-    subscribeRealtime();
-    await loadInitialMessages();
-    if (isNearBottom(chatEl)) markAsRead();
-    startPresenceLoop();
+// ✅ Enregistrement du Service Worker (Android uniquement)
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js")
+    .then(() => console.log("✅ Service Worker enregistré"))
+    .catch(err => console.error("❌ SW error", err));
+}
+
+await refreshMembers();
+startTicksPolling();
+subscribeRealtime();
+await loadInitialMessages();
+if (isNearBottom(chatEl)) markAsRead();
+startPresenceLoop();
+
 
   } catch (err) {
     console.error("LOGIN ERROR:", err);
