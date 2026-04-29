@@ -251,22 +251,8 @@ document.addEventListener("click", (e) => {
 
 
 
-async function requestAndroidNotificationPermission() {
-  if (!("Notification" in window)) return;
-  if (!("serviceWorker" in navigator)) return;
 
-  const permission = await Notification.requestPermission();
 
-  if (permission === "granted") {
-    console.log("✅ Notifications autorisées");
-  } else {
-    console.log("❌ Notifications refusées");
-  }
-}
-
-document.getElementById("notifBtn")?.addEventListener("click", () => {
-  requestAndroidNotificationPermission();
-});
 
 
 /* =========================
@@ -333,31 +319,7 @@ async function login() {
 loginDiv.style.display = "none";
 chatApp.style.display = "flex";
 
-// ✅ Service Worker (Android)
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js")
-    .then(() => console.log("✅ Service Worker enregistré"))
-    .catch(err => console.error("❌ SW error", err));
-}
 
-// ✅ Demande de permission Android
-requestAndroidNotificationPermission();
-
-await refreshMembers();
-startTicksPolling();
-subscribeRealtime();
-await loadInitialMessages();
-if (isNearBottom(chatEl)) markAsRead();
-startPresenceLoop();
-
-
-
-  } catch (err) {
-    console.error("LOGIN ERROR:", err);
-    loginError.textContent =
-      err?.message || JSON.stringify(err) || "Erreur inconnue";
-  }
-}
 
 
 
