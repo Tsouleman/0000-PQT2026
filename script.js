@@ -319,6 +319,21 @@ async function login() {
 loginDiv.style.display = "none";
 chatApp.style.display = "flex";
 
+await refreshMembers();
+startTicksPolling();
+subscribeRealtime();
+await loadInitialMessages();
+if (isNearBottom(chatEl)) markAsRead();
+startPresenceLoop();
+
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
+    loginError.textContent =
+      err?.message || "Erreur de connexion";
+  }
+}
+
+
 
 
 
