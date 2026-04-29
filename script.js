@@ -491,9 +491,6 @@ async function loadMissingMessages() {
 }
 /* ✅ FIN AJOUT 1 */
 
-async function loadMoreMessages(scrollBottom){
-  ...
-}
 
 
 
