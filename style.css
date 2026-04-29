@@ -178,18 +178,18 @@ html, body{
   user-select:none;
 }
 
+
 #replyPreview{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  padding:8px 10px;
-  background:rgba(0,0,0,.06);
-  border-left:4px solid var(--accent);
-  border-radius:12px;
-  margin:6px 0;
+  background: var(--inputBg);              /* ✅ même fond que le champ texte */
+  border-left: 4px solid var(--accent);
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.12);  /* léger relief */
 }
-body.dark #replyPreview{ background:rgba(255,255,255,.06); }
+
+
+body.dark #replyPreview{
+  background: #1e1e1e;                      /* clair mais distinct en dark */
+}
+
 
 #replyText{
   font-size:12px;
