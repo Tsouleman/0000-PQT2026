@@ -107,7 +107,7 @@ html, body{
 
 .topRight{ display:flex; gap:8px; }
 
-#themeBtn, #clearBtn{
+#themeBtn, #clearBtn, #notifBtn{
   background:rgba(255,255,255,.18);
   border:none;
   color:white;
