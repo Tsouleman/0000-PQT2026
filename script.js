@@ -449,12 +449,55 @@ function startTicksPolling(){
    ========================= */
 loadMoreBtn.addEventListener("click", () => loadMoreMessages(false));
 
+
+
+
 async function loadInitialMessages(){
   chatEl.innerHTML = "";
   oldestLoaded = null;
   pagingDone = false;
   await loadMoreMessages(true);
 }
+
+/* ✅ AJOUT ICI – juste après loadInitialMessages (≈ ligne 430) */
+async function loadMissingMessages() {
+  if (!roomId) return;
+
+  const lastMsgEl = chatEl.lastElementChild;
+  const lastCreatedAt = lastMsgEl?.dataset?.createdAt;
+
+  let q = sb.from("messages")
+    .select(`
+      id, room_id, user_id, text, image_path,
+      reply_to, created_at, deleted_at,
+      reply:reply_to(id, user_id, text, image_path, created_at)
+    `)
+    .eq("room_id", roomId)
+    .is("deleted_at", null)
+    .order("created_at", { ascending: true });
+
+  if (lastCreatedAt) q = q.gt("created_at", lastCreatedAt);
+
+  const { data, error } = await q;
+  if (!data || error) return;
+
+  for (const msg of data) {
+    chatEl.appendChild(await buildMessageNode(msg));
+  }
+
+  chatEl.scrollTop = chatEl.scrollHeight;
+  await refreshMembers();
+  markAsRead();
+}
+/* ✅ FIN AJOUT 1 */
+
+async function loadMoreMessages(scrollBottom){
+  ...
+}
+
+
+
+
 
 async function loadMoreMessages(scrollBottom){
   if(pagingDone) return;
@@ -781,6 +824,19 @@ clearBtn.addEventListener("click", async () => {
   }
   await loadInitialMessages();
 });
+
+
+/* ✅ AJOUTER JUSTE AVANT CLEANUP (≈ ligne 750) */
+document.addEventListener("visibilitychange", async () => {
+  if (!document.hidden && roomId) {
+    console.log("🔄 Retour sur l’app → reconnexion + rattrapage");
+
+    subscribeRealtime();
+    await loadMissingMessages();
+  }
+});
+/* ✅ FIN AJOUT 2 */
+
 
 /* =========================
    CLEANUP
