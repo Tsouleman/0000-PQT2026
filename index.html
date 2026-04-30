@@ -5,23 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>0000</title>
 
-  <!-- ✅ CSS TEST UNIQUEMENT (plus de double import) -->
-  <link rel="stylesheet" href="./style.css?v=20260430-1" />
+  
+  
+  <!-- ✅ CSS -->
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-  <div id="imgModal" style="
-    display:none;
-    position:fixed;
-    inset:0;
-    background:black;
-    z-index:9999;
-    align-items:center;
-    justify-content:center;
-  ">
-    <img id="imgModalImg" style="max-width:100%;max-height:100%;" />
-  </div>
 
+
+<div id="imgModal" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:black;
+  z-index:9999;
+  align-items:center;
+  justify-content:center;
+">
+  <img id="imgModalImg" style="
+    max-width:100%;
+    max-height:100%;
+  ">
+</div>
+
+  
   <!-- LOGIN -->
   <div id="login">
     <h2>Accès au chat</h2>
@@ -41,7 +48,7 @@
       <div class="topRight">
         <button id="themeBtn" title="Mode sombre" type="button">🌙</button>
         <button id="clearBtn" title="Vider la conversation" type="button">🗑️</button>
-      </div>
+       </div>
     </div>
 
     <button id="loadMoreBtn" class="secondary" style="display:none;" type="button">Charger plus</button>
@@ -53,44 +60,34 @@
       <button id="cancelReply" title="Annuler la réponse" type="button">✕</button>
     </div>
 
-    <!-- ✅ Input bar (ton HTML actuel avec SVG) -->
-  <div id="inputArea">
-  <!-- Groupe gauche : caméra + pièce jointe -->
-  <button type="button" id="cameraBtn" class="iconBtn" title="Prendre une photo" aria-label="Prendre une photo">
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M9.5 7 10.7 5.6c.2-.3.6-.6 1.1-.6h2.4c.5 0 .9.3 1.1.6L16.5 7H19c1.1 0 2 .9 2 2v9c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V9c0-1.1.9-2 2-2h4.5ZM12 18a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0-2.2a1.8 1.8 0 1 1 0-3.6 1.8 1.8 0 0 1 0 3.6Z"/>
-    </svg>
-  </button>
+    
+<div id="inputArea">
+  <textarea id="messageInput" rows="1" placeholder="Écrire un message…"></textarea>
 
-  <button type="button" id="galleryBtn" class="iconBtn" title="Joindre" aria-label="Joindre un fichier">
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M16.5 6.5 9 14c-.8.8-.8 2.2 0 3s2.2.8 3 0l8-8c1.6-1.6 1.6-4.2 0-5.8s-4.2-1.6-5.8 0L6 11.4C3.8 13.6 3.8 17 6 19.2s5.6 2.2 7.8 0l7.4-7.4-1.4-1.4-7.4 7.4c-1.4 1.4-3.6 1.4-5 0s-1.4-3.6 0-5l8.2-8.2c.8-.8 2.2-.8 3 0s.8 2.2 0 3l-8 8c-.2.2-.6.2-.8 0s-.2-.6 0-.8l7.5-7.5-1.4-1.4Z"/>
-    </svg>
-  </button>
+  <!-- Option B : 2 boutons -->
+  <button type="button" id="cameraBtn" title="Prendre une photo">📷</button>
+  <button type="button" id="galleryBtn" title="Choisir dans la galerie">🖼️</button>
 
-  <!-- Champ -->
-  <div class="inputPill">
-    <textarea id="messageInput" rows="1" placeholder="Écrire un message…"></textarea>
-  </div>
-
-  <!-- Inputs cachés (inchangés) -->
+  <!-- Inputs cachés -->
   <input id="cameraInput" type="file" accept="image/*" capture="environment" hidden />
   <input id="galleryInput" type="file" accept="image/*" hidden />
+
+  <!-- On garde imageInput pour compatibilité avec ton script actuel (au cas où) -->
   <input id="imageInput" type="file" accept="image/*" hidden />
 
-  <!-- Envoyer -->
-  <button id="sendBtn" class="sendBtn" title="Envoyer" type="button" aria-label="Envoyer">
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M3 11.2 21 3l-8.2 18-2.7-7.1L3 11.2Zm8.6 1.8 1.9 5.1L18.1 7.9 11.6 13Z"/>
-    </svg>
-  </button>
-</div>
+  <button id="sendBtn" title="Envoyer" type="button">➤</button>
 
+</div> <!-- fin inputArea -->
 
-  <!-- ✅ Supabase JS -->
-  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</div> <!-- ✅ fin chatApp -->
 
-  <!-- ✅ App JS -->
-  <script defer src="./script.js?v=20260430-1"></script>
+<!-- ✅ Supabase JS -->
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- ✅ App JS (bump la version pour casser le cache iOS) -->
+<script defer src="script.js?v=20260420-6"></script>
 </body>
 </html>
+
+
+
