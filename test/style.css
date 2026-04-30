@@ -208,34 +208,75 @@ body.dark #replyPreview{
   color:var(--text);
 }
 
+/* ===== Barre de saisie harmonisée ===== */
 #inputArea{
   display:flex;
-  gap:6px;
-  padding:8px 0 6px 0;
+  align-items:center;                 /* ✅ alignement propre */
+  gap:10px;                           /* ✅ espacement homogène */
+  padding:10px 12px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom)); /* ✅ iPhone notch */
   position:sticky;
   bottom:0;
   background:var(--bg);
-  align-items:flex-end;
+  box-shadow: 0 -6px 16px rgba(0,0,0,.12);  /* ✅ séparation du chat */
 }
 
+/* Champ texte */
 #messageInput{
   flex:1;
-  padding:12px;
-  font-size:16px;
-  border-radius:22px;
+  min-height:42px;
+  max-height:120px;
+  padding:10px 14px;
+  font-size:16px;                     /* ✅ évite zoom iOS */
+  line-height:1.2;
+  border-radius:14px;                 /* ✅ moins "capsule" */
   border:1px solid var(--inputBorder);
-  resize:none;
-  overflow-y:hidden;
-  min-height:46px;
-  max-height:160px;
   background:var(--inputBg);
   color:var(--text);
+  resize:none;
+  overflow-y:hidden;
   box-sizing:border-box;
 }
 
-#cameraLabel, #sendBtn{
+#messageInput:focus{
+  outline:none;
+  border-color: rgba(18,140,126,.45);
+  box-shadow: 0 0 0 3px rgba(18,140,126,.15);
+}
+
+/* Boutons caméra + galerie (mêmes dimensions, même style) */
+#cameraBtn, #galleryBtn{
   width:42px;
   height:42px;
+  font-size:18px;
+  border-radius:14px;                 /* ✅ cohérent avec l’input */
+  border:1px solid rgba(0,0,0,.10);
+  background: rgba(255,255,255,.88);
+  color: var(--text);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  user-select:none;
+  padding:0;
+  transition: transform .08s ease, background .15s ease;
+}
+
+#cameraBtn:active, #galleryBtn:active{
+  transform: scale(.96);
+}
+
+/* Variante dark pour les boutons médias */
+body.dark #cameraBtn, body.dark #galleryBtn{
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.08);
+  color: var(--text);
+}
+
+/* Bouton envoyer (CTA rond, un peu plus grand) */
+#sendBtn{
+  width:46px;
+  height:46px;
   font-size:18px;
   border-radius:50%;
   background:var(--accent);
@@ -246,6 +287,17 @@ body.dark #replyPreview{
   cursor:pointer;
   user-select:none;
   border:none;
+  padding:0;
+  box-shadow: 0 10px 20px rgba(18,140,126,.25);
+  transition: transform .08s ease, filter .15s ease;
+}
+
+#sendBtn:active{
+  transform: scale(.96);
+}
+
+#sendBtn:hover{
+  filter: brightness(1.03);
 }
 
 .status{
