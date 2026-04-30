@@ -248,13 +248,14 @@ body.dark #replyPreview{
   cursor:pointer;
   color:var(--text);
 }
-/* =========================
-   BARRE DE SAISIE (PROPRE + SVG)
-   ========================= */
+/* =========================================================
+   ✅ INPUT BAR — version propre (SVG visibles + capsule large)
+   À COLLER TOUT EN BAS du fichier style.css
+   ========================================================= */
 
 #inputArea{
   display:flex;
-  align-items:flex-end;
+  align-items:center;
   gap:10px;
   padding:10px 12px;
   padding-bottom: calc(10px + env(safe-area-inset-bottom));
@@ -264,17 +265,18 @@ body.dark #replyPreview{
   box-shadow: 0 -10px 22px rgba(0,0,0,.18);
 }
 
-/* Capsule centrale */
+/* Capsule centrale large */
 #inputArea .inputPill{
   flex:1;
-  min-width:0;                 /* ✅ CRITIQUE : évite le champ “mini” */
+  min-width:0; /* ✅ CRITIQUE : empêche la “petite pilule” */
   background: var(--inputBg);
   border: 1px solid var(--inputBorder);
   border-radius: 999px;
-  padding: 6px 12px;
+  padding: 6px 14px;
   box-sizing:border-box;
 }
 
+/* Focus sur la capsule */
 #inputArea .inputPill:focus-within{
   border-color: rgba(18,140,126,.55);
   box-shadow: 0 0 0 3px rgba(18,140,126,.15);
@@ -283,12 +285,12 @@ body.dark #replyPreview{
 /* Textarea intégré */
 #messageInput{
   width:100%;
-  min-width:0;                 /* ✅ CRITIQUE */
-  border:none;
+  min-width:0; /* ✅ CRITIQUE */
+  border:none !important;
   outline:none;
-  background: transparent;
+  background: transparent !important;
   color: var(--text);
-  font-size:16px;              /* ✅ évite zoom iOS */
+  font-size:16px;
   line-height:1.2;
   padding:10px 0;
   resize:none;
@@ -298,38 +300,42 @@ body.dark #replyPreview{
   box-sizing:border-box;
 }
 
-/* Boutons ronds (caméra + trombone) */
+/* Boutons ronds caméra + trombone */
 #inputArea .iconBtn{
   width:46px;
   height:46px;
   border-radius:50%;
-  border: 1px solid rgba(18,140,126,.28);
-  background: rgba(255,255,255,.92);
   display:grid;
   place-items:center;
   padding:0;
   cursor:pointer;
   user-select:none;
-  transition: transform .08s ease, filter .15s ease, background .15s ease;
+
+  /* IMPORTANT : on fixe une couleur pour les SVG via currentColor */
+  color: var(--accent);
+
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(18,140,126,.28);
+
+  transition: transform .08s ease, filter .15s ease;
 }
 
 body.dark #inputArea .iconBtn{
   background: rgba(255,255,255,.08);
   border: 1px solid rgba(255,255,255,.14);
+  color: var(--accent);
 }
 
 #inputArea .iconBtn:active{ transform: scale(.96); }
 #inputArea .iconBtn:hover{ filter: brightness(1.02); }
 
-/* SVG (taille + couleur cohérentes) */
-#inputArea .iconBtn svg{
-  width:22px;
-  height:22px;
-  fill: var(--accent);
-}
-
-body.dark #inputArea .iconBtn svg{
-  fill: var(--action); /* un peu plus visible en dark */
+/* ✅ SVG : taille + remplissage GARANTIS (évite les “carrés vides”) */
+#inputArea .iconBtn svg,
+#inputArea .sendBtn svg{
+  width:22px !important;
+  height:22px !important;
+  display:block;
+  fill: currentColor !important; /* ✅ CRUCIAL */
 }
 
 /* Bouton envoyer (CTA) */
@@ -338,23 +344,19 @@ body.dark #inputArea .iconBtn svg{
   height:46px;
   border-radius:50%;
   border:none;
-  background: var(--accent);
-  color:#fff;
   display:grid;
   place-items:center;
   padding:0;
   cursor:pointer;
   user-select:none;
+
+  background: var(--accent);
+  color:#fff;
+
   box-shadow: 0 10px 22px rgba(18,140,126,.28);
   transition: transform .08s ease, filter .15s ease;
 }
 
 #inputArea .sendBtn:hover{ filter: brightness(1.03); }
 #inputArea .sendBtn:active{ transform: scale(.96); }
-
-#inputArea .sendBtn svg{
-  width:22px;
-  height:22px;
-  fill:#fff;
-}
 
