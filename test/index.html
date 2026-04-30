@@ -62,21 +62,27 @@
     </div>
 
 
-    <div id="inputArea">
-  <div class="composerBox">
-    <button type="button" id="cameraBtn" class="iconIn" title="Prendre une photo" aria-label="Prendre une photo">📷</button>
-    <button type="button" id="galleryBtn" class="iconIn" title="Choisir dans la galerie" aria-label="Choisir dans la galerie">🖼️</button>
+<div id="inputArea">
+  <!-- Bouton rond caméra -->
+  <button type="button" id="cameraBtn" class="roundBtn" title="Prendre une photo" aria-label="Prendre une photo">📷</button>
 
+  <!-- Capsule message -->
+  <div class="composerBox">
     <textarea id="messageInput" rows="1" placeholder="Écrire un message…"></textarea>
   </div>
+
+  <!-- Bouton rond pièce jointe (trombone) -->
+  <button type="button" id="galleryBtn" class="roundBtn" title="Joindre un fichier" aria-label="Joindre un fichier">📎</button>
 
   <!-- Inputs cachés (inchangés) -->
   <input id="cameraInput" type="file" accept="image/*" capture="environment" hidden />
   <input id="galleryInput" type="file" accept="image/*" hidden />
   <input id="imageInput" type="file" accept="image/*" hidden />
 
-  <button id="sendBtn" title="Envoyer" type="button" aria-label="Envoyer">➤</button>
+  <!-- Bouton rond envoyer -->
+  <button id="sendBtn" class="sendRound" title="Envoyer" type="button" aria-label="Envoyer">➤</button>
 </div>
+
 
      <!-- fin inputArea -->
 
