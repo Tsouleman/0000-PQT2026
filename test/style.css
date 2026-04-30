@@ -1,405 +1,62 @@
-:root{
-  --bg:#7a7d7d;
-  --text:#111;
-  --muted:rgba(0,0,0,.65);
-
-  --topbar:#128c7e;
-  --accent:#128c7e;
-
-  --msgMine:#dcf8c6;
-  --msgOther:#fff;
-
-  --inputBg:#fff;
-  --inputBorder:#ccc;
-
-  --secondaryBtn:#e9e9e9;
-  --action:#0b57d0;
-}
-
-body.dark{
-  --bg:#121212;
-  --text:#e0e0e0;
-  --muted:rgba(255,255,255,.75);
-
-  --topbar:#1f2c34;
-  --accent:#00a884;
-
-  --msgMine:#005c4b;
-  --msgOther:#1f2c34;
-
-  --inputBg:#1e1e1e;
-  --inputBorder:#333;
-
-  --secondaryBtn:#1f2c34;
-  --action:#4fc3f7;
-}
-
-html, body{
-  margin:0;
-  padding:0;
-  height:100%;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background:var(--bg);
-  color:var(--text);
-}
-
-#login, #chatApp{
-  width:100%;
-  max-width:520px;
-  margin:0 auto;
-  box-sizing:border-box;
-  padding:12px;
-}
-
-#login{
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  height:100vh;
-}
-
-#login h2{ margin:0 0 10px 0; }
-
-#login input, #login button{
-  width:100%;
-  padding:12px;
-  margin:6px 0;
-  font-size:16px;
-  border-radius:10px;
-  border:1px solid var(--inputBorder);
-  background:var(--inputBg);
-  color:var(--text);
-  box-sizing:border-box;
-}
-
-#login button{
-  background:var(--accent);
-  border:none;
-  color:white;
-  cursor:pointer;
-}
-
-#loginError{
-  color:#b00020;
-  margin-top:6px;
-  min-height:18px;
-}
-
-#chatApp{
-  display:none;
-  flex-direction:column;
-  height:100vh;
-}
-
-#topBar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  background:var(--topbar);
-  color:white;
-  padding:10px 12px;
-  border-radius:12px;
-  margin-bottom:8px;
-}
-
-#peerName{ font-weight:700; }
-#peerStatus{ font-size:12px; opacity:0.9; }
-
-.topRight{ display:flex; gap:8px; }
-
-#themeBtn, #clearBtn{
-  background:rgba(255,255,255,.18);
-  border:none;
-  color:white;
-  padding:6px 10px;
-  border-radius:10px;
-  cursor:pointer;
-}
-
-.secondary{
-  width:100%;
-  padding:9px 10px;
-  border:none;
-  border-radius:12px;
-  cursor:pointer;
-  background:var(--secondaryBtn);
-  color:var(--text);
-  margin-bottom:8px;
-}
-
-#chat{
-  flex:1;
-  overflow-y:auto;
-  padding:6px 2px;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-
-.message{
-  padding:8px 12px;
-  border-radius:18px;
-  max-width:84%;
-  word-wrap:break-word;
-  font-size:14px;
-}
-
-.message.mine{ align-self:flex-end; background:var(--msgMine); }
-.message.other{ align-self:flex-start; background:var(--msgOther); }
-
-/* Quote (réponse) + miniature */
-.quote{
-  border-left:3px solid var(--accent);
-  padding-left:8px;
-  margin-bottom:6px;
-  font-size:12px;
-  opacity:.88;
-
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
-
-.quote .q-author{ font-weight:700; margin-bottom:1px; }
-
-.quote-thumb{
-  width:36px;
-  height:36px;
-  object-fit:cover;
-  border-radius:6px;
-  flex:0 0 auto;
-}
-
-.quote-thumb.placeholder{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:36px;
-  height:36px;
-  border-radius:6px;
-  background: rgba(0,0,0,0.08);
-}
-
-.q-body{ min-width:0; }
-.q-snippet{ opacity:0.85; }
-
-.message img{
-  max-width:100%;
-  display:block;
-  margin-top:6px;
-  border-radius:12px;
-}
-
-/* Status (heure + ticks) */
-.status{
-  font-size:11px;
-  opacity:0.65;
-  margin-top:4px;
-  display:flex;
-  align-items:center;
-  justify-content:flex-end;
-  gap:6px;
-  text-align:right;
-}
-
-.ticks{
-  font-weight:700;
-  font-size:12px;
-  letter-spacing:-1px;
-  user-select:none;
-}
-.ticks-sent{ color:#8a8a8a; }       /* ✓ gris */
-.ticks-delivered{ color:#8a8a8a; }  /* ✓✓ gris */
-.ticks-read{ color:#1f8cff; }       /* ✓✓ bleu */
-
-.actions{
-  font-size:12px;
-  color:var(--action);
-  cursor:pointer;
-  margin-right:8px;
-  user-select:none;
-}
-
-#replyPreview{
-  background: var(--inputBg);
-  border-left: 4px solid var(--accent);
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.12);
-  border-radius: 12px;
-  padding: 8px 10px;
-  margin-top: 6px;
-}
-
-body.dark #replyPreview{
-  background: #1e1e1e;
-}
-
-#replyText{
-  font-size:12px;
-  opacity:.9;
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-}
-
-#cancelReply{
-  border:none;
-  background:transparent;
-  font-size:18px;
-  cursor:pointer;
-  color:var(--text);
-}
 /* =========================================================
-   ✅ INPUT BAR — version propre (SVG visibles + capsule large)
-   À COLLER TOUT EN BAS du fichier style.css
+   TEST STYLE (ne remplace pas le style officiel)
+   - On importe le style officiel (472 lignes)
+   - On surcharge uniquement la barre de saisie pour:
+     ✅ même gris
+     ✅ pas d'effet de superposition
+     ✅ pas de recouvrement des messages
    ========================================================= */
 
-#inputArea{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 12px;
-  padding-bottom: calc(10px + env(safe-area-inset-bottom));
-  position:sticky;
-  bottom:0;
-  background: var(--bg);
-  box-shadow: 0 -10px 22px rgba(0,0,0,.18);
+@import url("../style.css");
+
+/* ---------------------------------------------------------
+   1) Empêcher les derniers messages d'être cachés sous la barre
+   (donne l'impression "superposition")
+   --------------------------------------------------------- */
+#chat{
+  padding-bottom: calc(92px + env(safe-area-inset-bottom)) !important;
 }
 
-/* Capsule centrale large */
-#inputArea .inputPill{
-  flex:1;
-  min-width:0; /* ✅ CRITIQUE : empêche la “petite pilule” */
-  background: var(--inputBg);
-  border: 1px solid var(--inputBorder);
-  border-radius: 999px;
-  padding: 6px 14px;
-  box-sizing:border-box;
-}
-
-/* Focus sur la capsule */
-#inputArea .inputPill:focus-within{
-  border-color: rgba(18,140,126,.55);
-  box-shadow: 0 0 0 3px rgba(18,140,126,.15);
-}
-
-/* Textarea intégré */
-#messageInput{
-  width:100%;
-  min-width:0; /* ✅ CRITIQUE */
-  border:none !important;
-  outline:none;
-  background: transparent !important;
-  color: var(--text);
-  font-size:16px;
-  line-height:1.2;
-  padding:10px 0;
-  resize:none;
-  overflow-y:hidden;
-  min-height:34px;
-  max-height:120px;
-  box-sizing:border-box;
-}
-
-/* Boutons ronds caméra + trombone */
-#inputArea .iconBtn{
-  width:46px;
-  height:46px;
-  border-radius:50%;
-  display:grid;
-  place-items:center;
-  padding:0;
-  cursor:pointer;
-  user-select:none;
-
-  /* IMPORTANT : on fixe une couleur pour les SVG via currentColor */
-  color: var(--accent);
-
-  background: rgba(255,255,255,.92);
-  border: 1px solid rgba(18,140,126,.28);
-
-  transition: transform .08s ease, filter .15s ease;
-}
-
-body.dark #inputArea .iconBtn{
-  background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.14);
-  color: var(--accent);
-}
-
-#inputArea .iconBtn:active{ transform: scale(.96); }
-#inputArea .iconBtn:hover{ filter: brightness(1.02); }
-
-/* ✅ SVG : taille + remplissage GARANTIS (évite les “carrés vides”) */
-#inputArea .iconBtn svg,
-#inputArea .sendBtn svg{
-  width:22px !important;
-  height:22px !important;
-  display:block;
-  fill: currentColor !important; /* ✅ CRUCIAL */
-}
-
-/* Bouton envoyer (CTA) */
-#inputArea .sendBtn{
-  width:46px;
-  height:46px;
-  border-radius:50%;
-  border:none;
-  display:grid;
-  place-items:center;
-  padding:0;
-  cursor:pointer;
-  user-select:none;
-
-  background: var(--accent);
-  color:#fff;
-
-  box-shadow: 0 10px 22px rgba(18,140,126,.28);
-  transition: transform .08s ease, filter .15s ease;
-}
-
-#inputArea .sendBtn:hover{ filter: brightness(1.03); }
-#inputArea .sendBtn:active{ transform: scale(.96); }
-
-
-
-
-
-/*
-   ✅ OVERRIDE FINAL (TEST) — barre de saisie propre + SVG visibles
-   À coller TOUT EN BAS de style.css
-   ========================================================= */
-
+/* ---------------------------------------------------------
+   2) Barre du bas: même gris que le fond, ancrée, sans ombre
+   + pleine largeur (compense le padding 12px de #chatApp)
+   --------------------------------------------------------- */
 #inputArea{
   display:flex !important;
   align-items:center !important;
   gap:10px !important;
-  padding:10px 12px !important;
-  padding-bottom: calc(10px + env(safe-area-inset-bottom)) !important;
-  position:sticky !important;
-  bottom:0 !important;
-  background: var(--bg) !important;
-  box-shadow: 0 -10px 22px rgba(0,0,0,.18) !important;
+
+  /* ✅ pleine largeur malgré #chatApp{padding:12px} */
+  margin: 8px -12px -12px -12px !important;
+
+  padding: 12px !important;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom)) !important;
+
+  background: var(--bg) !important;          /* ✅ même gris */
+  box-shadow: none !important;               /* ✅ plus de carte flottante */
+  border-top: 1px solid rgba(0,0,0,.12) !important;
+
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 5 !important;
 }
 
-/* ✅ Important: neutralise les styles natifs des boutons sur mobile */
-#inputArea button{
-  -webkit-appearance: none !important;
-  appearance: none !important;
-  border: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  background: transparent !important;
+body.dark #inputArea{
+  border-top: 1px solid rgba(255,255,255,.14) !important;
 }
 
-/* Capsule centrale large */
+/* ---------------------------------------------------------
+   3) Capsule du champ: stable et large (pas "mini")
+   --------------------------------------------------------- */
 #inputArea .inputPill{
-  flex:1 !important;
-  min-width:0 !important; /* ✅ évite la “petite pilule” */
+  flex: 1 !important;
+  min-width: 0 !important; /* ✅ évite la capsule qui se rétracte */
   background: var(--inputBg) !important;
   border: 1px solid var(--inputBorder) !important;
   border-radius: 999px !important;
   padding: 6px 14px !important;
-  box-sizing:border-box !important;
+  box-shadow: none !important;
+  box-sizing: border-box !important;
 }
 
 #inputArea .inputPill:focus-within{
@@ -407,37 +64,39 @@ body.dark #inputArea .iconBtn{
   box-shadow: 0 0 0 3px rgba(18,140,126,.15) !important;
 }
 
-/* Textarea intégré */
 #messageInput{
-  width:100% !important;
-  min-width:0 !important;
-  border:none !important;
-  outline:none !important;
+  width: 100% !important;
+  min-width: 0 !important; /* ✅ évite le champ "petite pilule" */
+  border: none !important;
+  outline: none !important;
   background: transparent !important;
   color: var(--text) !important;
-  font-size:16px !important; /* évite zoom iOS */
-  line-height:1.2 !important;
-  padding:10px 0 !important;
-  resize:none !important;
-  overflow-y:hidden !important;
-  min-height:34px !important;
-  max-height:120px !important;
-  box-sizing:border-box !important;
+  font-size: 16px !important;
+  line-height: 1.2 !important;
+  padding: 10px 0 !important;
+  resize: none !important;
+  overflow-y: hidden !important;
+  min-height: 34px !important;
+  max-height: 120px !important;
+  box-sizing: border-box !important;
 }
 
-/* Boutons ronds icônes (caméra + trombone) */
+/* ---------------------------------------------------------
+   4) Boutons ronds SVG: visibles (fin des carrés vides)
+   --------------------------------------------------------- */
 #inputArea .iconBtn{
-  width:46px !important;
-  height:46px !important;
-  border-radius:50% !important;
-  display:grid !important;
-  place-items:center !important;
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 50% !important;
+  display: grid !important;
+  place-items: center !important;
+
   background: rgba(255,255,255,.92) !important;
   border: 1px solid rgba(18,140,126,.28) !important;
-  color: var(--accent) !important; /* ✅ SVG utilise currentColor */
-  cursor:pointer !important;
-  user-select:none !important;
-  line-height:0 !important; /* ✅ centre mieux le SVG */
+
+  color: var(--accent) !important;
+  cursor: pointer !important;
+  padding: 0 !important;
 }
 
 body.dark #inputArea .iconBtn{
@@ -446,29 +105,27 @@ body.dark #inputArea .iconBtn{
   color: var(--accent) !important;
 }
 
-/* Bouton envoyer (CTA) */
 #inputArea .sendBtn{
-  width:46px !important;
-  height:46px !important;
-  border-radius:50% !important;
-  display:grid !important;
-  place-items:center !important;
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 50% !important;
+  display: grid !important;
+  place-items: center !important;
+
   background: var(--accent) !important;
-  color:#fff !important;
-  cursor:pointer !important;
-  user-select:none !important;
-  line-height:0 !important;
-  box-shadow: 0 10px 22px rgba(18,140,126,.28) !important;
+  color: #fff !important;
+  border: none !important;
+
+  cursor: pointer !important;
+  padding: 0 !important;
 }
 
-/* ✅ SVG visibles (évite les carrés vides) */
+/* ✅ SVG: taille + remplissage garantis */
 #inputArea .iconBtn svg,
 #inputArea .sendBtn svg{
-  width:22px !important;
-  height:22px !important;
-  display:block !important;
+  width: 22px !important;
+  height: 22px !important;
+  display: block !important;
   fill: currentColor !important;
-  pointer-events:none !important; /* évite clic sur svg au lieu du bouton */
+  pointer-events: none !important;
 }
-
-
