@@ -248,11 +248,9 @@ body.dark #replyPreview{
   cursor:pointer;
   color:var(--text);
 }
-/* =========================================================
-   ✅ BARRE DE SAISIE — version propre
-   - boutons ronds caméra + trombone
-   - capsule input au milieu
-   ========================================================= */
+/* =========================
+   BARRE DE SAISIE (PROPRE + SVG)
+   ========================= */
 
 #inputArea{
   display:flex;
@@ -263,26 +261,26 @@ body.dark #replyPreview{
   position:sticky;
   bottom:0;
   background: var(--bg);
-  box-shadow: 0 -8px 18px rgba(0,0,0,.14);
+  box-shadow: 0 -10px 22px rgba(0,0,0,.18);
 }
 
-/* Capsule unique pour le message */
-#inputArea .composerBox{
+/* Capsule centrale */
+#inputArea .inputPill{
   flex:1;
-  min-width:0;                 /* ✅ CRITIQUE : évite l’input “mini-pilule” */
+  min-width:0;                 /* ✅ CRITIQUE : évite le champ “mini” */
   background: var(--inputBg);
   border: 1px solid var(--inputBorder);
   border-radius: 999px;
-  padding: 6px 10px;
+  padding: 6px 12px;
   box-sizing:border-box;
 }
 
-#inputArea .composerBox:focus-within{
+#inputArea .inputPill:focus-within{
   border-color: rgba(18,140,126,.55);
   box-shadow: 0 0 0 3px rgba(18,140,126,.15);
 }
 
-/* Textarea intégré (sans bord, sans fond) */
+/* Textarea intégré */
 #messageInput{
   width:100%;
   min-width:0;                 /* ✅ CRITIQUE */
@@ -290,9 +288,9 @@ body.dark #replyPreview{
   outline:none;
   background: transparent;
   color: var(--text);
-  font-size:16px;              /* évite zoom iOS */
+  font-size:16px;              /* ✅ évite zoom iOS */
   line-height:1.2;
-  padding:10px 8px;
+  padding:10px 0;
   resize:none;
   overflow-y:hidden;
   min-height:34px;
@@ -301,59 +299,62 @@ body.dark #replyPreview{
 }
 
 /* Boutons ronds (caméra + trombone) */
-.roundBtn{
+#inputArea .iconBtn{
   width:46px;
   height:46px;
   border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:18px;
+  border: 1px solid rgba(18,140,126,.28);
+  background: rgba(255,255,255,.92);
+  display:grid;
+  place-items:center;
+  padding:0;
   cursor:pointer;
   user-select:none;
-  padding:0;
-
-  /* style “pro” : cercle clair, bord accent */
-  background: rgba(255,255,255,.90);
-  border: 1px solid rgba(18,140,126,.35);
-  color: var(--text);
-
   transition: transform .08s ease, filter .15s ease, background .15s ease;
 }
 
-.roundBtn:hover{
-  filter: brightness(1.02);
-}
-
-.roundBtn:active{
-  transform: scale(.96);
-}
-
-/* Dark mode pour les ronds */
-body.dark .roundBtn{
+body.dark #inputArea .iconBtn{
   background: rgba(255,255,255,.08);
   border: 1px solid rgba(255,255,255,.14);
-  color: var(--text);
 }
 
-/* Bouton envoyer rond (CTA) */
-.sendRound{
+#inputArea .iconBtn:active{ transform: scale(.96); }
+#inputArea .iconBtn:hover{ filter: brightness(1.02); }
+
+/* SVG (taille + couleur cohérentes) */
+#inputArea .iconBtn svg{
+  width:22px;
+  height:22px;
+  fill: var(--accent);
+}
+
+body.dark #inputArea .iconBtn svg{
+  fill: var(--action); /* un peu plus visible en dark */
+}
+
+/* Bouton envoyer (CTA) */
+#inputArea .sendBtn{
   width:46px;
   height:46px;
   border-radius:50%;
   border:none;
   background: var(--accent);
   color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display:grid;
+  place-items:center;
+  padding:0;
   cursor:pointer;
   user-select:none;
-  padding:0;
-  font-size:18px;
-  box-shadow: 0 10px 22px rgba(18,140,126,.26);
+  box-shadow: 0 10px 22px rgba(18,140,126,.28);
   transition: transform .08s ease, filter .15s ease;
 }
 
-.sendRound:hover{ filter: brightness(1.03); }
-.sendRound:active{ transform: scale(.96); }
+#inputArea .sendBtn:hover{ filter: brightness(1.03); }
+#inputArea .sendBtn:active{ transform: scale(.96); }
+
+#inputArea .sendBtn svg{
+  width:22px;
+  height:22px;
+  fill:#fff;
+}
+
