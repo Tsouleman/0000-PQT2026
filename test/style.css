@@ -1,72 +1,79 @@
-/* =========================================================
+/*
    TEST STYLE (ne remplace pas le style officiel)
-   - On importe le style officiel (472 lignes)
-   - On surcharge uniquement la barre de saisie pour:
-     ✅ même gris
-     ✅ pas d'effet de superposition
-     ✅ pas de recouvrement des messages
    ========================================================= */
-
 @import url("../style.css");
 
-/* ---------------------------------------------------------
-   1) Empêcher les derniers messages d'être cachés sous la barre
-   (donne l'impression "superposition")
-   --------------------------------------------------------- */
-#chat{
-  padding-bottom: calc(92px + env(safe-area-inset-bottom)) !important;
+/* =========================================================
+   Objectifs :
+   1) Même gris => pas de "carte" en superposition
+   2) Pas de trait gris (border) au-dessus de la barre
+   3) Le chat ne passe plus sous la barre
+   4) La scrollbar à droite ne se voit plus (mais le scroll reste)
+   ========================================================= */
+
+/* 1) Empêche le body de scroller (évite double scroll) */
+html, body{
+  height: 100%;
+  overflow: hidden;
 }
 
-/* ---------------------------------------------------------
-   2) Barre du bas: même gris que le fond, ancrée, sans ombre
-   + pleine largeur (compense le padding 12px de #chatApp)
-   --------------------------------------------------------- */
-#inputArea{
-  display:flex !important;
-  align-items:center !important;
-  gap:10px !important;
+/* 2) Le conteneur app ne déborde pas */
+#chatApp{
+  overflow: hidden;
+}
 
-  /* ✅ pleine largeur malgré #chatApp{padding:12px} */
-  margin: 8px -12px -12px -12px !important;
+/* 3) Le chat reste scrollable, mais on réserve la place de la barre */
+#chat{
+  padding-bottom: calc(92px + env(safe-area-inset-bottom)) !important;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 4) Masquer visuellement la scrollbar (tout en gardant le scroll) */
+#chat{
+  scrollbar-width: none;          /* Firefox */
+}
+#chat::-webkit-scrollbar{
+  width: 0;
+  height: 0;
+}
+
+/* 5) Barre du bas : même gris, ancrée, SANS ombre, SANS trait */
+#inputArea{
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+
+  /* pleine largeur malgré #chatApp padding:12px */
+  margin: 0 -12px -12px -12px !important;
 
   padding: 12px !important;
   padding-bottom: calc(12px + env(safe-area-inset-bottom)) !important;
 
-  background: var(--bg) !important;          /* ✅ même gris */
-  box-shadow: none !important;               /* ✅ plus de carte flottante */
-  border-top: 1px solid rgba(0,0,0,.12) !important;
+  background: var(--bg) !important;   /* ✅ même gris */
+  box-shadow: none !important;        /* ✅ pas d'effet "superposition" */
+  border-top: none !important;        /* ✅ supprime le trait gris */
 
   position: sticky !important;
   bottom: 0 !important;
   z-index: 5 !important;
 }
 
-body.dark #inputArea{
-  border-top: 1px solid rgba(255,255,255,.14) !important;
-}
-
-/* ---------------------------------------------------------
-   3) Capsule du champ: stable et large (pas "mini")
-   --------------------------------------------------------- */
+/* 6) Capsule du champ texte */
 #inputArea .inputPill{
   flex: 1 !important;
-  min-width: 0 !important; /* ✅ évite la capsule qui se rétracte */
+  min-width: 0 !important;
   background: var(--inputBg) !important;
   border: 1px solid var(--inputBorder) !important;
   border-radius: 999px !important;
   padding: 6px 14px !important;
-  box-shadow: none !important;
   box-sizing: border-box !important;
-}
-
-#inputArea .inputPill:focus-within{
-  border-color: rgba(18,140,126,.55) !important;
-  box-shadow: 0 0 0 3px rgba(18,140,126,.15) !important;
+  box-shadow: none !important;
 }
 
 #messageInput{
   width: 100% !important;
-  min-width: 0 !important; /* ✅ évite le champ "petite pilule" */
+  min-width: 0 !important;
   border: none !important;
   outline: none !important;
   background: transparent !important;
@@ -81,9 +88,7 @@ body.dark #inputArea{
   box-sizing: border-box !important;
 }
 
-/* ---------------------------------------------------------
-   4) Boutons ronds SVG: visibles (fin des carrés vides)
-   --------------------------------------------------------- */
+/* 7) Boutons ronds (caméra + trombone) */
 #inputArea .iconBtn{
   width: 46px !important;
   height: 46px !important;
@@ -93,8 +98,8 @@ body.dark #inputArea{
 
   background: rgba(255,255,255,.92) !important;
   border: 1px solid rgba(18,140,126,.28) !important;
-
   color: var(--accent) !important;
+
   cursor: pointer !important;
   padding: 0 !important;
 }
@@ -105,6 +110,7 @@ body.dark #inputArea .iconBtn{
   color: var(--accent) !important;
 }
 
+/* 8) Bouton envoyer (CTA) */
 #inputArea .sendBtn{
   width: 46px !important;
   height: 46px !important;
@@ -120,7 +126,7 @@ body.dark #inputArea .iconBtn{
   padding: 0 !important;
 }
 
-/* ✅ SVG: taille + remplissage garantis */
+/* 9) SVG visibles (plus de "carrés vides") */
 #inputArea .iconBtn svg,
 #inputArea .sendBtn svg{
   width: 22px !important;
