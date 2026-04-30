@@ -62,21 +62,22 @@
     </div>
 
     
-<div id="inputArea">
-  <textarea id="messageInput" rows="1" placeholder="Écrire un message…"></textarea>
+<div id="inputArea" class="composer">
+  <!-- Boutons médias à gauche (même style) -->
+  <button type="button" id="cameraBtn" class="icon-btn" title="Prendre une photo" aria-label="Prendre une photo">📷</button>
+  <button type="button" id="galleryBtn" class="icon-btn" title="Choisir dans la galerie" aria-label="Choisir dans la galerie">🖼️</button>
 
-  <!-- Option B : 2 boutons -->
-  <button type="button" id="cameraBtn" title="Prendre une photo">📷</button>
-  <button type="button" id="galleryBtn" title="Choisir dans la galerie">🖼️</button>
+  <!-- Champ de saisie -->
+  <textarea id="messageInput" class="composer-input" rows="1" placeholder="Écrire un message…"></textarea>
 
-  <!-- Inputs cachés -->
+  <!-- Inputs cachés (inchangés) -->
   <input id="cameraInput" type="file" accept="image/*" capture="environment" hidden />
   <input id="galleryInput" type="file" accept="image/*" hidden />
-
-  <!-- On garde imageInput pour compatibilité avec ton script actuel (au cas où) -->
   <input id="imageInput" type="file" accept="image/*" hidden />
 
-  <button id="sendBtn" title="Envoyer" type="button">➤</button>
+  <!-- Envoyer -->
+  <button id="sendBtn" class="send-btn" title="Envoyer" type="button" aria-label="Envoyer">➤</button>
+</div>
 
 </div> <!-- fin inputArea -->
 
