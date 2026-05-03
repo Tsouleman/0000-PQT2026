@@ -166,12 +166,16 @@ messageInput.addEventListener("input", () => {
   messageInput.style.height = messageInput.scrollHeight + "px";
   setTyping(true);
 });
+
 messageInput.addEventListener("keydown", (e) => {
-  if(e.key === "Enter" && !e.shiftKey){
+  // ✅ Entrée = nouvelle ligne (comportement normal)
+  // ✅ Ctrl+Entrée (Windows/Linux) ou Cmd+Entrée (Mac) = envoyer
+  if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
     e.preventDefault();
     sendMessage();
   }
 });
+
 
 
 
