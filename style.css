@@ -569,14 +569,19 @@ body.dark #galleryBtn{
 
 
 
-/* === (donc à la photo) === */
+
+/* === Bulles qui collent au contenu (image + texte) === */
 .message{
+  display: inline-flex;      /* shrink-wrap */
+  flex-direction: column;    /* contenu vertical (quote / text / img / status) */
   width: fit-content;
-  max-width: 84%; /* on garde ta limite actuelle */
+  max-width: 84%;            /* garde ta limite existante */
 }
 
-/* F mal interprété */
-@supports not (width: fit-content){
-  .message{ display: inline-block; }
+/* Le statut (heure/ticks) doit rester à droite sans élargir la bulle */
+.message .status{
+  align-self: flex-end;      /* au lieu de “prendre toute la largeur” */
+  width: auto;
 }
+
 
