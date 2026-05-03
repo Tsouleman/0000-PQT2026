@@ -566,3 +566,17 @@ body.dark #galleryBtn{
   fill: currentColor;
   pointer-events: none;
 }
+
+
+
+/* === (donc à la photo) === */
+.message{
+  width: fit-content;
+  max-width: 84%; /* on garde ta limite actuelle */
+}
+
+/* F mal interprété */
+@supports not (width: fit-content){
+  .message{ display: inline-block; }
+}
+
