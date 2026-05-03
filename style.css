@@ -313,3 +313,65 @@ textarea, input, button, select {
 #messageInput::placeholder {
   font-family: inherit;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================================
+   UI — Boutons caméra + pièce jointe (fond blanc)
+   (bouton envoyer inchangé)
+   À coller TOUT EN BAS de style.css
+   ========================================================= */
+
+/* Caméra + pièce jointe : ronds, fond blanc, bord léger */
+#cameraBtn,
+#galleryBtn{
+  width: 42px;               /* garde la taille existante pour ne pas casser la mise en page */
+  height: 42px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #fff;
+  color: var(--accent);
+
+  border: 1px solid rgba(0,0,0,.10);
+  box-shadow: 0 6px 14px rgba(0,0,0,.10);
+
+  cursor: pointer;
+  user-select: none;
+  padding: 0;
+
+  transition: transform .08s ease, box-shadow .15s ease, filter .15s ease;
+}
+
+/* Interaction */
+#cameraBtn:active,
+#galleryBtn:active{
+  transform: scale(.96);
+}
+#cameraBtn:hover,
+#galleryBtn:hover{
+  filter: brightness(1.02);
+  box-shadow: 0 8px 18px rgba(0,0,0,.12);
+}
+
+/* Mode sombre : fond légèrement transparent pour rester cohérent */
+body.dark #cameraBtn,
+body.dark #galleryBtn{
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow: none; /* plus sobre en dark */
+  color: var(--accent);
+}
