@@ -375,3 +375,29 @@ body.dark #galleryBtn{
   box-shadow: none; /* plus sobre en dark */
   color: var(--accent);
 }
+
+
+
+
+/* =========================================================
+   SVG boutons — rendu stable PC/Android/iOS (safe)
+   ========================================================= */
+
+/* Centre le contenu (utile pour SVG dans les boutons) */
+#cameraBtn, #galleryBtn, #sendBtn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
+/* SVG : taille fixe + couleur via currentColor */
+#cameraBtn .btnIcon,
+#galleryBtn .btnIcon,
+#sendBtn .btnIcon{
+  width: 22px;
+  height: 22px;
+  display: block;
+  fill: currentColor;
+  pointer-events: none; /* évite de cliquer "sur" le svg */
+}
