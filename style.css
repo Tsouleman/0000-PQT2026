@@ -293,3 +293,23 @@ body.dark #replyPreview{
 
 .q-body{ min-width:0; }
 .q-snippet{ opacity:0.85; }
+
+
+
+
+
+
+
+
+/* === Uniformiser la police entre bulles et champ de saisie === */
+textarea, input, button, select {
+  font-family: inherit;
+}
+
+#messageInput {
+  font-family: inherit;
+}
+
+#messageInput::placeholder {
+  font-family: inherit;
+}
