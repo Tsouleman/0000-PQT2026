@@ -401,3 +401,89 @@ body.dark #galleryBtn{
   fill: currentColor;
   pointer-events: none; /* évite de cliquer "sur" le svg */
 }
+
+
+
+
+
+
+========
+   Compact UI : caméra + pièce jointe
+   - icônes blanches
+   - fond identique au chat (var(--bg))
+   - plus petits pour laisser de la place au champ
+   - bouton d’envoi inchangé
+   ========================================================= */
+
+/* (Optionnel mais utile) : un peu moins d’espace entre éléments */
+#inputArea{
+  gap: 4px; /* au lieu de 6px si tu veux gagner encore un peu */
+}
+
+/* Caméra + galerie : même fond que le chat, icône blanche, plus petit */
+#cameraBtn,
+#galleryBtn{
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+
+  /* fond "identique au chat" :
+     transparent = on voit le fond de #inputArea (var(--bg)) */
+  background: transparent;
+  border: none;
+  box-shadow: none;
+
+  /* icône blanche (le SVG prend currentColor) */
+  color: rgba(255,255,255,.95);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  margin: 0;
+  line-height: 0;
+
+  cursor: pointer;
+  user-select: none;
+
+  transition: transform .08s ease, opacity .15s ease, background .15s ease;
+}
+
+/* Petit feedback au survol/pression (léger, sans "cartes") */
+@media (hover:hover){
+  #cameraBtn:hover,
+  #galleryBtn:hover{
+    background: rgba(255,255,255,.10);
+  }
+}
+
+#cameraBtn:active,
+#galleryBtn:active{
+  transform: scale(.95);
+}
+
+/* Taille des SVG dans ces 2 boutons (plus compact) */
+#cameraBtn .btnIcon,
+#galleryBtn .btnIcon{
+  width: 18px;
+  height: 18px;
+  display: block;
+  fill: currentColor;
+  pointer-events: none;
+}
+
+/* (Mobile) si tu veux éviter que ce soit trop petit au doigt :
+   tu peux commenter ce bloc si tu veux rester ultra compact */
+@media (pointer: coarse){
+  #cameraBtn,
+  #galleryBtn{
+    width: 42px;
+    height: 42px;
+  }
+  #cameraBtn .btnIcon,
+  #galleryBtn .btnIcon{
+    width: 20px;
+    height: 20px;
+  }
+}
