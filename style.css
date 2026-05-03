@@ -585,3 +585,10 @@ body.dark #galleryBtn{
 }
 
 
+/* Afficher les retours à la ligne dans les bulles */
+.message .text{
+  white-space: pre-wrap;   /* conserve \n, casse les lignes */
+  word-break: break-word;  /* sécurité pour longs mots */
+}
+
+
