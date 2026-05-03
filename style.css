@@ -156,12 +156,18 @@ html, body{
 }
 .quote .q-author{ font-weight:700; margin-bottom:1px; }
 
+
 .message img{
-  max-width:100%;
+  width: 220px;
+  height: 160px;
+  max-width: 70%;
   display:block;
   margin-top:6px;
   border-radius:12px;
+  object-fit: cover;  /* recadre proprement */
+  cursor: pointer;
 }
+
 
 .status{
   font-size:11px;
