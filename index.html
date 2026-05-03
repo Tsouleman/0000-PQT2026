@@ -65,8 +65,20 @@
   <textarea id="messageInput" rows="1" placeholder="Écrire un message…"></textarea>
 
   <!-- Option B : 2 boutons -->
-  <button type="button" id="cameraBtn" title="Prendre une photo">📷</button>
-  <button type="button" id="galleryBtn" title="Choisir dans la galerie">🖼️</button>
+  
+<button type="button" id="cameraBtn" title="Prendre une photo" aria-label="Prendre une photo">
+  <svg class="btnIcon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path d="M9.5 7 10.7 5.6c.2-.3.6-.6 1.1-.6h2.4c.5 0 .9.3 1.1.6L16.5 7H19c1.1 0 2 .9 2 2v9c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V9c0-1.1.9-2 2-2h4.5ZM12 18a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0-2.2a1.8 1.8 0 1 1 0-3.6 1.8 1.8 0 0 1 0 3.6Z"/>
+  </svg>
+</button>
+
+
+<button type="button" id="galleryBtn" title="Choisir dans la galerie" aria-label="Choisir dans la galerie">
+  <svg class="btnIcon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path d="M16.5 6.5 9 14c-.8.8-.8 2.2 0 3s2.2.8 3 0l8-8c1.6-1.6 1.6-4.2 0-5.8s-4.2-1.6-5.8 0L6 11.4C3.8 13.6 3.8 17 6 19.2s5.6 2.2 7.8 0l7.4-7.4-1.4-1.4-7.4 7.4c-1.4 1.4-3.6 1.4-5 0s-1.4-3.6 0-5l8.2-8.2c.8-.8 2.2-.8 3 0s.8 2.2 0 3l-8 8c-.2.2-.6.2-.8 0s-.2-.6 0-.8l7.5-7.5-1.4-1.4Z"/>
+  </svg>
+</button>
+
 
   <!-- Inputs cachés -->
   <input id="cameraInput" type="file" accept="image/*" capture="environment" hidden />
@@ -75,7 +87,13 @@
   <!-- On garde imageInput pour compatibilité avec ton script actuel (au cas où) -->
   <input id="imageInput" type="file" accept="image/*" hidden />
 
-  <button id="sendBtn" title="Envoyer" type="button">➤</button>
+ 
+<button id="sendBtn" title="Envoyer" type="button" aria-label="Envoyer">
+  <svg class="btnIcon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path d="M3 11.4 21 3l-8.4 18-2.6-7.1L3 11.4Zm8.7 1.5 1.6 4.4 4.8-10.1-6.4 5.7Z"/>
+  </svg>
+</button>
+
 
 </div> <!-- fin inputArea -->
 
