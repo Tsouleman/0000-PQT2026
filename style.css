@@ -501,13 +501,13 @@ body.dark #galleryBtn{
    Cam SVG très grands
    - Fond identique au chat (transparent)
    - Icône blanche
-   - Taille confortable (32px)
+   - Taille confortable (28px)
    - SVG très grand (95% du bouton)
    - SendBtn inchangé
    ========================================================= */
 
 :root{
-  --attachBtnSize: 32px;   /* confortable partout */
+  --attachBtnSize: 28px;   /* confortable partout */
   --attachIconSize: 95%;   /* "plein" sans risque de rognage */
 }
 
