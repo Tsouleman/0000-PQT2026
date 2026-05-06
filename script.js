@@ -500,9 +500,7 @@ async function loadMissingMessages() {
 
 
 
-async function loadMoreMessages(scrollBottom) {
-  let q = sb.from("messages")
-    .select(
+async function loadMoreMessages(scrollBottom) {async    .select(
       "id, room_id, user_id, text, image_path, reply_to, created_at, deleted_at, reply:reply_to(id, user_id, text, image_path, created_at)"
     )
     .eq("room_id", roomId)
@@ -525,23 +523,29 @@ async function loadMoreMessages(scrollBottom) {
     return;
   }
 
-  // ✅ mise à jour du curseur de pagination
+  // ✅ mise à jour du curseur AVANT insertion
   oldestLoaded = data[data.length - 1].created_at;
 
-  const frag = document.createDocumentFragment();
+  // ✅ construire les nodes AVANT toute mutation DOM
+  const nodes = [];
   for (const msg of data.reverse()) {
-    frag.appendChild(await buildMessageNode(msg));
+    const node = await buildMessageNode(msg);
+    nodes.push(node);
   }
 
+  // ✅ insertion DOM SYNCHRONE (critique)
+  const frag = document.createDocumentFragment();
+  for (const node of nodes) frag.appendChild(node);
   chatEl.prepend(frag);
 
-  // ✅ scroll simple et fiable
   if (scrollBottom) {
     chatEl.scrollTop = chatEl.scrollHeight;
   }
 
   loadMoreBtn.style.display = "block";
 }
+  let q = sb.from("messages")
+
 
 /* =========================
    REALTIME
