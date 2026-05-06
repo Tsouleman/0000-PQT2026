@@ -521,11 +521,15 @@ async function loadMoreMessages(scrollBottom){
     return;
   }
 
-  if(!data || data.length === 0){
+
+if(!data || data.length === 0){
+  if (oldestLoaded) {
     pagingDone = true;
     loadMoreBtn.style.display = "none";
-    return;
   }
+  return;
+}
+
 
   oldestLoaded = data[data.length - 1].created_at;
   loadMoreBtn.style.display = "block";
