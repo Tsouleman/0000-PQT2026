@@ -52,7 +52,7 @@ let membersCache = new Map();
 let peerUserId = null;
 
 let oldestLoaded = null;
-
+let pagingDone = false;
 
 let replyToId = null;
 
@@ -459,7 +459,7 @@ loadMoreBtn.addEventListener("click", () => loadMoreMessages(false));
 async function loadInitialMessages(){
   chatEl.innerHTML = "";
   oldestLoaded = null;
-
+  pagingDone = false;
   await loadMoreMessages(true);
 }
 
@@ -500,52 +500,53 @@ async function loadMissingMessages() {
 
 
 
-async function loadMoreMessages(scrollBottom) {async    .select(
-      "id, room_id, user_id, text, image_path, reply_to, created_at, deleted_at, reply:reply_to(id, user_id, text, image_path, created_at)"
-    )
+async function loadMoreMessages(scrollBottom){
+  if(pagingDone) return;
+
+  const prevHeight = chatEl.scrollHeight;
+  const prevTop = chatEl.scrollTop;
+
+  let q = sb.from("messages")
+    .select("id, room_id, user_id, text, image_path, reply_to, created_at, deleted_at, reply:reply_to(id, user_id, text, image_path, created_at)")
     .eq("room_id", roomId)
     .is("deleted_at", null)
-    .order("created_at", { ascending: false })
+    .order("created_at", { ascending:false })
     .limit(30);
 
-  if (oldestLoaded) {
-    q = q.lt("created_at", oldestLoaded);
-  }
+  if(oldestLoaded) q = q.lt("created_at", oldestLoaded);
 
   const { data, error } = await q;
-  if (error) {
-    console.error("loadMoreMessages error:", error);
+  if(error){
+    console.error(error);
     return;
   }
 
-  if (!data || data.length === 0) {
-    loadMoreBtn.style.display = "none";
-    return;
-  }
 
-  // ✅ mise à jour du curseur AVANT insertion
+
+if(!data || data.length === 0){
+  pagingDone = true;
+  loadMoreBtn.style.display = "none";
+  return;
+}
+
+
+
   oldestLoaded = data[data.length - 1].created_at;
+  loadMoreBtn.style.display = "block";
 
-  // ✅ construire les nodes AVANT toute mutation DOM
-  const nodes = [];
-  for (const msg of data.reverse()) {
-    const node = await buildMessageNode(msg);
-    nodes.push(node);
-  }
+  await refreshMembers();
 
-  // ✅ insertion DOM SYNCHRONE (critique)
+  const asc = [...data].reverse();
   const frag = document.createDocumentFragment();
-  for (const node of nodes) frag.appendChild(node);
+  for(const msg of asc){
+    frag.appendChild(await buildMessageNode(msg));
+  }
   chatEl.prepend(frag);
 
-  if (scrollBottom) {
-    chatEl.scrollTop = chatEl.scrollHeight;
-  }
-
-  loadMoreBtn.style.display = "block";
+  const newHeight = chatEl.scrollHeight;
+  chatEl.scrollTop = prevTop + (newHeight - prevHeight);
+  if(scrollBottom) chatEl.scrollTop = chatEl.scrollHeight;
 }
-  let q = sb.from("messages")
-
 
 /* =========================
    REALTIME
