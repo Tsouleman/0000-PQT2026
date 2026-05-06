@@ -52,7 +52,7 @@ let membersCache = new Map();
 let peerUserId = null;
 
 let oldestLoaded = null;
-let pagingDone = false;
+
 
 let replyToId = null;
 
@@ -459,7 +459,7 @@ loadMoreBtn.addEventListener("click", () => loadMoreMessages(false));
 async function loadInitialMessages(){
   chatEl.innerHTML = "";
   oldestLoaded = null;
-  pagingDone = false;
+
   await loadMoreMessages(true);
 }
 
@@ -500,52 +500,47 @@ async function loadMissingMessages() {
 
 
 
-async function loadMoreMessages(scrollBottom){
-  if(pagingDone) return;
-
-  const prevHeight = chatEl.scrollHeight;
-  const prevTop = chatEl.scrollTop;
-
+async function loadMoreMessages(scrollBottom) {
   let q = sb.from("messages")
-    .select("id, room_id, user_id, text, image_path, reply_to, created_at, deleted_at, reply:reply_to(id, user_id, text, image_path, created_at)")
+    .select(
+      "id, room_id, user_id, text, image_path, reply_to, created_at, deleted_at, reply:reply_to(id, user_id, text, image_path, created_at)"
+    )
     .eq("room_id", roomId)
     .is("deleted_at", null)
-    .order("created_at", { ascending:false })
+    .order("created_at", { ascending: false })
     .limit(30);
 
-  if(oldestLoaded) q = q.lt("created_at", oldestLoaded);
+  if (oldestLoaded) {
+    q = q.lt("created_at", oldestLoaded);
+  }
 
   const { data, error } = await q;
-  if(error){
-    console.error(error);
+  if (error) {
+    console.error("loadMoreMessages error:", error);
     return;
   }
 
-
-if(!data || data.length === 0){
-  if (oldestLoaded) {
-    pagingDone = true;
+  if (!data || data.length === 0) {
     loadMoreBtn.style.display = "none";
+    return;
   }
-  return;
-}
 
-
+  // ✅ mise à jour du curseur de pagination
   oldestLoaded = data[data.length - 1].created_at;
-  loadMoreBtn.style.display = "block";
 
-  await refreshMembers();
-
-  const asc = [...data].reverse();
   const frag = document.createDocumentFragment();
-  for(const msg of asc){
+  for (const msg of data.reverse()) {
     frag.appendChild(await buildMessageNode(msg));
   }
+
   chatEl.prepend(frag);
 
-  const newHeight = chatEl.scrollHeight;
-  chatEl.scrollTop = prevTop + (newHeight - prevHeight);
-  if(scrollBottom) chatEl.scrollTop = chatEl.scrollHeight;
+  // ✅ scroll simple et fiable
+  if (scrollBottom) {
+    chatEl.scrollTop = chatEl.scrollHeight;
+  }
+
+  loadMoreBtn.style.display = "block";
 }
 
 /* =========================
