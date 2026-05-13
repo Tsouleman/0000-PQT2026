@@ -81,11 +81,81 @@ let realtimeChannel = null;
 /* =========================
    HELPERS
    ========================= */
-function esc(str=""){
-  return str.replace(/[&<>"']/g, s => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  }[s]));
+
+
+// ✅ Escape HTML (sécurise les textes affichés)
+function esc(str = "") {
+  return String(str).replace(/[&<>"']/g, (ch) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[ch]));
 }
+
+// ✅ Transforme les URLs en <a> cliquables, sans risque XSS
+function linkify(str = "") {
+  const raw = String(str);
+
+  // Regex simple & fiable : http(s)://... ou www....
+  const urlRe = /(\bhttps?:\/\/[^\s<]+|\bwww\.[^\s<]+)/gi;
+
+  // On échappe d'abord tout le texte
+  const escaped = esc(raw);
+
+  // Comme on a échappé le texte, on refait une détection d’URL sur le texte brut
+  // et on reconstruit une version HTML sûre.
+  let out = "";
+  let lastIndex = 0;
+
+  for (const match of raw.matchAll(urlRe)) {
+    const start = match.index ?? 0;
+    const end = start + match[0].length;
+
+    // Ajoute la partie avant le lien (échappée)
+    out += esc(raw.slice(lastIndex, start));
+
+    // Nettoie la ponctuation finale souvent collée au lien
+    let shown = match[0];
+    let trailing = "";
+    while (/[),.;!?:"'\]]$/.test(shown)) {
+      trailing = shown.slice(-1) + trailing;
+      shown = shown.slice(0, -1);
+    }
+
+    // Normalise www. -> https://
+    const href = shown.startsWith("www.") ? `https://${shown}` : shown;
+
+    // Sécurité : n'autoriser que http/https
+    let ok = false;
+    try {
+      const u = new URL(href);
+      ok = (u.protocol === "http:" || u.protocol === "https:");
+    } catch {
+      ok = false;
+    }
+
+    if (ok) {
+      out += `" target="_blank" rel="noopener noreferrer">${esc(shown)}</a>${esc(trailing)}`;
+    } else {
+      // Si URL suspecte/invalide -> on laisse du texte
+      out += esc(match[0]);
+    }
+
+    lastIndex = end;
+  }
+
+  // Ajoute la fin du texte
+  out += esc(raw.slice(lastIndex));
+
+  // Conserve les retours à la ligne
+  return out.replace(/\n/g, "<br>");
+}
+
+
+
+
 function formatTime(ts){
   const d = new Date(ts);
   const h = String(d.getHours()).padStart(2,"0");
@@ -653,7 +723,7 @@ if (msg.reply) {
 }
 
 
-  const textHtml = msg.text ? `<div class="text">${esc(msg.text)}</div>` : "";
+  const textHtml = msg.text ? `<div class="text">${linkify(msg.text)}</div>` : "";
 
   let imgHtml = "";
   if(msg.image_path){
