@@ -83,7 +83,7 @@ let realtimeChannel = null;
    ========================= */
 
 
-// ✅ Escape HTML (sécurise les textes affichés)
+
 function esc(str = "") {
   return String(str).replace(/[&<>"']/g, (ch) => ({
     "&": "&amp;",
@@ -94,65 +94,45 @@ function esc(str = "") {
   }[ch]));
 }
 
-// ✅ Transforme les URLs en <a> cliquables, sans risque XSS
 function linkify(str = "") {
-  const raw = String(str);
+  const text = String(str);
 
-  // Regex simple & fiable : http(s)://... ou www....
+  // URLs: http(s)://... ou www....
   const urlRe = /(\bhttps?:\/\/[^\s<]+|\bwww\.[^\s<]+)/gi;
+  const isUrlPart = /^(https?:\/\/[^\s<]+|www\.[^\s<]+)$/i;
 
-  // On échappe d'abord tout le texte
-  const escaped = esc(raw);
+  const parts = text.split(urlRe);
 
-  // Comme on a échappé le texte, on refait une détection d’URL sur le texte brut
-  // et on reconstruit une version HTML sûre.
-  let out = "";
-  let lastIndex = 0;
+  const html = parts.map((part) => {
+    if (!isUrlPart.test(part)) return esc(part);
 
-  for (const match of raw.matchAll(urlRe)) {
-    const start = match.index ?? 0;
-    const end = start + match[0].length;
-
-    // Ajoute la partie avant le lien (échappée)
-    out += esc(raw.slice(lastIndex, start));
-
-    // Nettoie la ponctuation finale souvent collée au lien
-    let shown = match[0];
+    // Enlève ponctuation finale collée au lien (.) , ) etc.
+    let shown = part;
     let trailing = "";
     while (/[),.;!?:"'\]]$/.test(shown)) {
       trailing = shown.slice(-1) + trailing;
       shown = shown.slice(0, -1);
     }
 
-    // Normalise www. -> https://
     const href = shown.startsWith("www.") ? `https://${shown}` : shown;
 
-    // Sécurité : n'autoriser que http/https
-    let ok = false;
+    // Sécurité : autoriser uniquement http/https
     try {
       const u = new URL(href);
-      ok = (u.protocol === "http:" || u.protocol === "https:");
+      if (u.protocol !== "http:" && u.protocol !== "https:") {
+        return esc(part);
+      }
     } catch {
-      ok = false;
+      return esc(part);
     }
 
-    if (ok) {
-      out += `" target="_blank" rel="noopener noreferrer">${esc(shown)}</a>${esc(trailing)}`;
-    } else {
-      // Si URL suspecte/invalide -> on laisse du texte
-      out += esc(match[0]);
-    }
+    // ✅ IMPORTANT: on construit un vrai <a href="..."> (c’est ce qui manquait)
+    return `<a href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(shown)}</a>${esc(trailing)}`;
+  }).join("");
 
-    lastIndex = end;
-  }
-
-  // Ajoute la fin du texte
-  out += esc(raw.slice(lastIndex));
-
-  // Conserve les retours à la ligne
-  return out.replace(/\n/g, "<br>");
+  // Conserver les retours à la ligne
+  return html.replace(/\n/g, "<br>");
 }
-
 
 
 
@@ -723,7 +703,7 @@ if (msg.reply) {
 }
 
 
-  const textHtml = msg.text ? `<div class="text">${linkify(msg.text)}</div>` : "";
+const textHtml = msg.text ? `<div class="text">${linkify(msg.text)}</div>` : "";
 
   let imgHtml = "";
   if(msg.image_path){
