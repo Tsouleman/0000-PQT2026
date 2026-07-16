@@ -141,7 +141,7 @@ html, body{
   border-radius:18px;
   max-width:84%;
   word-wrap:break-word;
-  font-size:14px;
+  font-size:16px;
 }
 
 .message.mine{ align-self:flex-end; background:var(--msgMine); }
